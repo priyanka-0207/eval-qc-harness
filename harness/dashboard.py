@@ -202,7 +202,7 @@ el.addEventListener('mouseleave',function(){tip.style.display='none'});
 el.addEventListener('focus',function(){var r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top)});
 el.addEventListener('blur',function(){tip.style.display='none'});});
 var pages=['data','agent','graders','judge'];
-function route(){var h=(location.hash||'#data').slice(1);if(pages.indexOf(h)<0)h='data';
+function route(){var h=root.dataset.start||(location.hash||'#data').slice(1);if(pages.indexOf(h)<0)h='data';
 document.querySelectorAll('.page').forEach(function(p){p.hidden=p.dataset.page!==h});
 document.querySelectorAll('[data-tab]').forEach(function(a){var on=a.dataset.tab===h;a.classList.toggle('active',on);a.setAttribute('aria-selected',on)});
 document.querySelectorAll('.verdict').forEach(function(v){v.classList.toggle('current',v.dataset.page===h)});}
@@ -438,9 +438,13 @@ def _page_head(num, title, sub):
             f'<p class="sub">{_e(sub)}</p></div></div>')
 
 
-def _pager(idx):
-    prev = f'<a class="btn" href="#{PAGES[idx - 1][0]}">&larr; {_e(PAGES[idx - 1][1])}</a>' if idx > 0 else "<span></span>"
-    nxt = f'<a class="btn" href="#{PAGES[idx + 1][0]}">{_e(PAGES[idx + 1][1])} &rarr;</a>' if idx < len(PAGES) - 1 else "<span></span>"
+def _hash_href(key):
+    return f"#{key}"
+
+
+def _pager(idx, href=_hash_href):
+    prev = f'<a class="btn" href="{href(PAGES[idx - 1][0])}">&larr; {_e(PAGES[idx - 1][1])}</a>' if idx > 0 else "<span></span>"
+    nxt = f'<a class="btn" href="{href(PAGES[idx + 1][0])}">{_e(PAGES[idx + 1][1])} &rarr;</a>' if idx < len(PAGES) - 1 else "<span></span>"
     return f'<div class="pager">{prev}{nxt}</div>'
 
 
@@ -649,10 +653,6 @@ def render(results):
     judge = results.get("judge") or {"status": "skipped", "message": ""}
     verdicts = _verdicts(results)
     vstate = {v[0]: v[1] for v in verdicts}
-    verdict_html = "".join(
-        f'<a class="verdict {state}" href="#{anchor}" data-page="{anchor}"><div class="q">{_e(q)}</div>{_chip(state, chip)}'
-        f'<div class="big">{_e(big)}</div></a>'
-        for anchor, state, chip, q, big, why in verdicts)
     t_clean = {a: runs[("time", a)]["totals"] for a in ("v1_nearest", "v2_vote")}
     t_naive = {a: runs[("naive", a)]["totals"] for a in ("v1_nearest", "v2_vote")}
     lo = _axis_lo([d[m]["rate"] for d in list(t_clean.values()) + list(t_naive.values())
@@ -663,19 +663,31 @@ def render(results):
         "graders": _graders_page(results, vstate["graders"]),
         "judge": _judge_page(judge, vstate["judge"]),
     }
-    pages_html = "".join(
-        f'<section class="page" id="page-{key}" data-page="{key}"{"" if i == 0 else " hidden"}>{bodies[key]}{_pager(i)}</section>'
-        for i, (key, _) in enumerate(PAGES))
-    tabs = "".join(f'<a href="#{key}" data-tab="{key}" role="tab"><b>{i + 1}</b>{_e(label)}</a>' for i, (key, label) in enumerate(PAGES))
     banner = ('<div class="banner"><strong>Demo data.</strong> These complaints were generated to test the harness. '
               'They are not real, and the scores say nothing about real agent performance.</div>') if is_demo else ""
-    html = f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eval QC Report</title><style>{CSS}</style></head>
+    meta = (f'Complaint-routing agent &middot; {results["splits"]["time"]["eval_rows"]} test complaints &middot; '
+            f'generated {_e(_nice_time(results.get("generated_at", "")))}')
+
+    def assemble(href, start=None):
+        show = start or PAGES[0][0]
+        verdict_html = "".join(
+            f'<a class="verdict {state}" href="{href(anchor)}" data-page="{anchor}"><div class="q">{_e(q)}</div>{_chip(state, chip)}'
+            f'<div class="big">{_e(big)}</div></a>'
+            for anchor, state, chip, q, big, why in verdicts)
+        pages_html = "".join(
+            f'<section class="page" id="page-{key}" data-page="{key}"{"" if key == show else " hidden"}>{bodies[key]}{_pager(i, href)}</section>'
+            for i, (key, _) in enumerate(PAGES) if start is None or key == start)
+        tabs = "".join(f'<a href="{href(key)}" data-tab="{key}" role="tab"><b>{i + 1}</b>{_e(label)}</a>'
+                       for i, (key, label) in enumerate(PAGES))
+        title = "Eval QC Report" if start is None else f"{dict(PAGES)[start]} | Eval QC Report"
+        start_attr = f' data-start="{start}"' if start else ""
+        return f"""<!doctype html>
+<html lang="en"{start_attr}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{_e(title)}</title><style>{CSS}</style></head>
 <body>
 <header class="topbar"><div class="inner"><div class="row"><div>
 <div class="eyebrow">Eval QC harness</div><h1>Can this agent's score be trusted?</h1>
-<p class="meta">Complaint-routing agent &middot; {results["splits"]["time"]["eval_rows"]} test complaints &middot; generated {_e(_nice_time(results.get("generated_at", "")))}</p></div>
+<p class="meta">{meta}</p></div>
 <button class="theme" id="theme" type="button">Dark theme</button></div>
 <nav class="tabs" role="tablist">{tabs}</nav>
 </div></header>
@@ -686,7 +698,18 @@ def render(results):
 {GLOSSARY}
 <footer>Per-case traces in reports/traces &middot; all numbers in reports/results.json &middot; text version in reports/report.md</footer>
 </main><div id="tip" role="tooltip"></div><script>{JS}</script></body></html>"""
+
     path = config.REPORTS / "dashboard.html"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(html, encoding="utf-8")
+    path.write_text(assemble(_hash_href), encoding="utf-8")
+
+    site = config.REPORTS / "site"
+    root_href = lambda key: f"{key}/"
+    sub_href = lambda key: f"../{key}/"
+    site.mkdir(parents=True, exist_ok=True)
+    (site / "index.html").write_text(assemble(root_href, PAGES[0][0]), encoding="utf-8")
+    for key, _ in PAGES:
+        folder = site / key
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "index.html").write_text(assemble(sub_href, key), encoding="utf-8")
     return path

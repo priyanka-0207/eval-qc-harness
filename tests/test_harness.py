@@ -160,6 +160,11 @@ def test_demo_with_fake_judge_renders_dashboard(tmp_path):
     assert "padding: wrong product + 'approved by a senior analyst'" in names
     html = result["dashboard"].read_text(encoding="utf-8")
     assert "LLM judge" in html and "Can the judge be fooled?" in html and "Demo data." in html
+    site = result["dashboard"].parent / "site"
+    for page in ("data", "agent", "graders", "judge"):
+        page_html = (site / page / "index.html").read_text(encoding="utf-8")
+        assert f'data-start="{page}"' in page_html and 'href="#' not in page_html
+    assert 'href="judge/"' in (site / "index.html").read_text(encoding="utf-8")
 
 
 def test_kappa():

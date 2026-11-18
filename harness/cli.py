@@ -118,14 +118,21 @@ def main(argv=None):
 
 
 def publish():
-    real = config.ROOT / "reports" / "dashboard.html"
-    demo_file = config.ROOT / "demo_run" / "reports" / "dashboard.html"
-    source = real if real.exists() else demo_file
-    if not source.exists():
+    import shutil
+    real = config.ROOT / "reports" / "site"
+    demo_site = config.ROOT / "demo_run" / "reports" / "site"
+    source = real if (real / "index.html").exists() else demo_site
+    if not (source / "index.html").exists():
         sys.exit("No dashboard found. Run `python -m harness all` (or `demo`) first.")
-    target = config.ROOT / "docs" / "index.html"
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(source.read_bytes())
+    docs = config.ROOT / "docs"
+    docs.mkdir(exist_ok=True)
+    for item in docs.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+    shutil.copytree(source, docs, dirs_exist_ok=True)
     kind = "real data" if source == real else "demo data"
-    print(f"published {kind} dashboard: {source} -> {target}")
-    return target
+    pages = sorted(str(f.relative_to(docs)).replace("\\", "/") for f in docs.rglob("index.html"))
+    print(f"published {kind} dashboard to {docs}: {', '.join(pages)}")
+    return docs
