@@ -48,27 +48,27 @@ SCORE_MEANING = {0: "Wrong product", 1: "Doubtful, or quote does not support it"
 
 CSS = """
 :root{color-scheme:light;
---page:#f4f4f1;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
---border:rgba(11,11,11,.10);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
+--page:#eceae5;--surface:#fdfdfc;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
+--border:rgba(11,11,11,.09);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
 --good:#0ca30c;--good-ink:#006300;--warn:#fab219;--warn-ink:#8a5a00;--crit:#d03b3b;--crit-ink:#b42828;
 --good-tint:rgba(12,163,12,.13);--crit-tint:rgba(208,59,59,.13);
---top:#111214;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0}
+--top:#16171a;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0;--shadow:0 1px 2px rgba(20,20,15,.06),0 1px 1px rgba(20,20,15,.04);--top-line:transparent}
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;
---page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+--page:#121211;--surface:#1c1c1b;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
 --border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
 --good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
 --good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
---top:#000;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416}}
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}}
 :root[data-theme="dark"]{color-scheme:dark;
---page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+--page:#121211;--surface:#1c1c1b;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
 --border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
 --good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
 --good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
---top:#000;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416}
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--page);color:var(--ink);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-.topbar{background:var(--top);color:var(--top-ink)}
+.topbar{background:var(--top);color:var(--top-ink);border-bottom:1px solid var(--top-line)}
 .topbar .inner{max-width:1120px;margin:0 auto;padding:22px 16px 0}
 .topbar .row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--top-muted)}
@@ -90,12 +90,12 @@ p{margin:0}
 .verdicts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
 @media (max-width:900px){.verdicts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.verdicts{grid-template-columns:1fr}}
-.verdict{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--muted);border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;display:block}
+.verdict{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-top:4px solid var(--muted);border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;display:block}
 .verdict:hover{border-color:var(--axis)}
 .verdict.current{box-shadow:0 0 0 2px var(--clean)}
 .verdict.good{border-top-color:var(--good)}.verdict.warn{border-top-color:var(--warn)}.verdict.crit{border-top-color:var(--crit)}
 .verdict .q{color:var(--ink-2);font-size:12px;margin-bottom:6px}
-.verdict .big{font-size:18px;font-weight:650;line-height:1.25;margin:8px 0 4px}
+.verdict .big{font-size:17px;font-weight:650;line-height:1.3;margin:10px 0 0}
 .verdict .why{color:var(--ink-2);font-size:12px}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
 .chip .ic{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
@@ -105,19 +105,19 @@ p{margin:0}
 .chip.none{color:var(--ink-2)}.chip.none .ic{background:var(--muted)}
 .page-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
 .num-badge{flex:none;width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700}
-.findings{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--clean);border-radius:6px;padding:12px 16px;margin-bottom:16px}
+.findings{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--clean);border-radius:6px;padding:12px 16px;margin-bottom:16px}
 .findings.good{border-left-color:var(--good)}.findings.warn{border-left-color:var(--warn)}.findings.crit{border-left-color:var(--crit)}
 .findings ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
 .findings li{margin:3px 0}
 .findings strong{color:var(--ink)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px}
+.card{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px}
 .card-title{margin-bottom:8px}
 .how{color:var(--muted);font-size:12px;margin-top:2px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-bottom:16px}
 .grid2>.card{margin-bottom:0}
 .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
 @media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.tile{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.tile{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
 .tile .label{color:var(--ink-2);font-size:13px}
 .tile .value{font-size:24px;font-weight:650;margin-top:2px}
 .tile .note{color:var(--muted);font-size:12px}
@@ -171,6 +171,16 @@ dl.glossary dt{font-weight:600}dl.glossary dd{margin:0;color:var(--ink-2)}
 #tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:none;z-index:10;max-width:280px}
 [data-tip]:focus{outline:2px solid var(--clean);outline-offset:2px}
 footer{color:var(--muted);font-size:12px;margin-top:20px;border-top:1px solid var(--grid);padding-top:14px}
+
+details.more{margin:4px 0 16px}
+details.more>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+";font-weight:700}
+details.more[open]>summary::before{content:"\2212"}
+details.more>summary:hover{color:var(--ink);border-color:var(--axis)}
+.more-body{margin-top:14px}
+.cnt{font-variant-numeric:tabular-nums;margin-left:4px;color:var(--ink-2)}
+td .icon{vertical-align:middle;margin-top:0}
 @media print{.topbar{background:#fff;color:#000}nav.tabs,button.theme,.pager{display:none}.page[hidden]{display:block!important}.card,.verdict,.tile{break-inside:avoid}}
 """
 
@@ -181,6 +191,7 @@ function current(){return root.dataset.theme||(matchMedia('(prefers-color-scheme
 function label(){btn.textContent=current()==='dark'?'Light theme':'Dark theme'}
 try{var saved=localStorage.getItem('evalqc-theme');if(saved)root.dataset.theme=saved}catch(e){}
 label();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',label)}catch(e){}
 btn.addEventListener('click',function(){root.dataset.theme=current()==='dark'?'light':'dark';try{localStorage.setItem('evalqc-theme',root.dataset.theme)}catch(e){}label()});
 var tip=document.getElementById('tip');
 function show(el,x,y){tip.textContent=el.getAttribute('data-tip');tip.style.display='block';
@@ -202,6 +213,16 @@ window.addEventListener('hashchange',function(){route();window.scrollTo(0,0)});r
 
 def _e(x):
     return escape(str(x))
+
+
+def _nice_time(stamp):
+    from datetime import datetime
+    try:
+        d = datetime.strptime(stamp, "%Y-%m-%d %H:%M")
+    except ValueError:
+        return stamp
+    hour = d.strftime("%I:%M %p").lstrip("0")
+    return f"{d.strftime('%b')} {d.day}, {d.year}, {hour}"
 
 
 def _pct(x, digits=1):
@@ -423,6 +444,51 @@ def _pager(idx):
     return f'<div class="pager">{prev}{nxt}</div>'
 
 
+def _details(body, label="Show details"):
+    return f'<details class="more"><summary>{_e(label)}</summary><div class="more-body">{body}</div></details>'
+
+
+def _mark(ok):
+    return '<span class="icon ok">&#10003;</span>' if ok else '<span class="icon bad">&#10005;</span>'
+
+
+def _gate_compare(qc):
+    clean = {c["check"]: c for c in qc["time"]["checks"]}
+    naive = {c["check"]: c for c in qc["naive"]["checks"]}
+    rows = []
+    for name, c in clean.items():
+        n = naive.get(name)
+        rows.append([_e(name[0].upper() + name[1:]), _mark(c["status"] == "PASS"),
+                     _mark(n["status"] == "PASS") if n else '<span class="muted">n/a</span>'])
+    passed_c = sum(c["status"] == "PASS" for c in clean.values())
+    passed_n = sum(c["status"] == "PASS" for c in naive.values())
+    rows.append(["<strong>Checks passed</strong>", f"<strong>{passed_c} of {len(clean)}</strong>",
+                 f"<strong>{passed_n} of {len(naive)}</strong>"])
+    return _table(["Check", "Clean split", "Naive split"], rows)
+
+
+def _grader_summary(table):
+    groups = defaultdict(lambda: {"correct": [0, 0], "mistake": [0, 0], "shortcut": [0, 0]})
+    for r in table:
+        good = r["passed"] if r["kind"] == "correct" else r["caught"]
+        g = groups[r["scorer"]][r["kind"]]
+        g[0] += good
+        g[1] += r["n"]
+    rows = []
+    for s in SCORER_ORDER:
+        if s not in groups:
+            continue
+        cells = [f"<strong>{_e(SCORER_LABELS.get(s, s))}</strong>"]
+        for kind in ("correct", "mistake", "shortcut"):
+            good, n = groups[s][kind]
+            if not n:
+                cells.append('<span class="muted">n/a</span>')
+            else:
+                cells.append(f'{_mark(good == n)} <span class="cnt">{good / n:.0%}</span>')
+        rows.append(cells)
+    return _table(["Scorer", "Accepts correct answers", "Catches planted mistakes", "Catches cheating answers"], rows)
+
+
 def _data_page(results, state, t_clean, t_naive, lo):
     qc, splits, manifest = results["qc"], results["splits"], results["silver_manifest"]
     steps = manifest["steps"]
@@ -430,46 +496,33 @@ def _data_page(results, state, t_clean, t_naive, lo):
     infl = (t_naive["v1_nearest"]["product_match"]["rate"] - t_clean["v1_nearest"]["product_match"]["rate"]) * 100
     fails = sum(1 for c in qc["naive"]["checks"] if c["status"] == "FAIL")
     items = [
-        f'<strong>{_num(steps[-1]["rows"])} of {_num(steps[0]["rows"])} rows</strong> survived cleaning, and every removed row is accounted for.',
-        f'<strong>{splits["time"].get("eval_pool_near_duplicates_removed", 0)} near copies</strong> of older complaints were pulled out of the test set before scoring.',
-        f'The naive split failed <strong>{fails} of {len(qc["naive"]["checks"])}</strong> checks, including leakage, so the QC gate would block it.',
-        f'On the naive split, v1 looks <strong>{infl:+.1f} points</strong> better at picking the product. That gap is leakage, not skill.',
+        f'<strong>{_num(steps[-1]["rows"])} of {_num(steps[0]["rows"])}</strong> rows survived cleaning, and '
+        f'{splits["time"].get("eval_pool_near_duplicates_removed", 0)} near copies were removed from the test set.',
+        f'The naive split failed <strong>{fails} of {len(qc["naive"]["checks"])}</strong> checks, so the gate would block it.',
+        f'Leakage made the agent look <strong>{infl:+.1f} points</strong> better than it is.',
     ]
+    leak = _card("What leakage does to the score",
+                 "Same agent (v1), same data, two ways of splitting it.",
+                 _legend([("--clean", "Clean split"), ("--naive", "Naive split")])
+                 + f'<div class="chart">{_dumbbell(t_clean["v1_nearest"], t_naive["v1_nearest"], lo)}</div>')
+    gate = _card("QC gate", "Every check must pass before a score counts.", _gate_compare(qc))
+
     lineage_rows = [[_e(_short_step(s["step"])), _num(s["dropped"]) if s["dropped"] else "-", _num(s["rows"])] for s in steps]
-    lineage = _card("How the data was cleaned",
-                    f'Raw rows minus every removal equals the rows kept: {"reconciled" if manifest["reconciled"] else "<strong>not reconciled</strong>"}.',
-                    _table(["Step", "Rows removed", "Rows left"], lineage_rows, (1, 2),
-                           [""] * (len(steps) - 1) + ["total"]))
-    mix = ""
+    extra = _card("Cleaning steps", f'Raw rows minus every removal equals rows kept: {"reconciled" if manifest["reconciled"] else "not reconciled"}.',
+                  _table(["Step", "Removed", "Rows left"], lineage_rows, (1, 2)))
     if eval_rows:
         total = len(eval_rows)
         prod = Counter(_short_product(r["product"]) for r in eval_rows).most_common()
-        rules = Counter()
-        for r in eval_rows:
-            hits = r.get("rules") or []
-            key = ("No escalation needed" if not hits else "Both rules" if len(hits) > 1
-                   else "Fraud or identity theft" if hits[0] == "fraud_or_identity_theft" else "Servicemember or older consumer")
-            rules[key] += 1
-        order = ["No escalation needed", "Fraud or identity theft", "Servicemember or older consumer", "Both rules"]
-        p_tab = _table(["Product", "Cases", "Share"], [[_e(k), _num(v), _pct(v / total, 0)] for k, v in prod], (1, 2))
-        r_tab = _table(["Escalation rule", "Cases", "Share"], [[_e(k), _num(rules.get(k, 0)), _pct(rules.get(k, 0) / total, 0)] for k in order], (1, 2))
-        mix = _card("What is in the test set", f"{total} test complaints, newer than everything in the retrieval corpus.",
-                    f'<div class="grid2" style="margin:0">{p_tab}{r_tab}</div>')
-    gates = (f'<div class="grid2">{_gate_card("Clean split", "Corpus older than the test set, duplicates and near copies removed", qc["time"])}'
-             f'{_gate_card("Naive split", "Random split on raw rows, no cleaning. Built to show what goes wrong.", qc["naive"])}</div>')
+        extra += _card("Test set by product", f"{total} test complaints.",
+                       _table(["Product", "Cases", "Share"], [[_e(k), _num(v), _pct(v / total, 0)] for k, v in prod], (1, 2)))
     leak_tv = [[_e(f'{a.split("_")[0]}: {label}'), _pct(t_clean[a][m]["rate"]), _pct(t_naive[a][m]["rate"]),
                 _delta(t_clean[a][m]["rate"], t_naive[a][m]["rate"])]
                for a in ("v1_nearest", "v2_vote") for m, label in METRICS]
-    leak = _card("What leakage does to the score",
-                 "Same agent, same data, two ways of splitting it. The number on the right is how much the naive split inflates the score.",
-                 _legend([("--clean", "Clean split"), ("--naive", "Naive split")])
-                 + '<p class="sub" style="font-weight:600;margin:4px 0">v1 nearest</p>'
-                 + f'<div class="chart">{_dumbbell(t_clean["v1_nearest"], t_naive["v1_nearest"], lo)}</div>'
-                 + '<p class="sub" style="font-weight:600;margin:14px 0 4px">v2 vote</p>'
-                 + f'<div class="chart">{_dumbbell(t_clean["v2_vote"], t_naive["v2_vote"], lo)}</div>'
-                 + _tv(["Metric", "Clean", "Naive", "Inflation (pts)"], leak_tv, (1, 2, 3)))
-    return (_page_head(1, "Can we trust the test data?", "Before any score counts, the test set has to be clean, leak-free and newer than the corpus.")
-            + _findings(state, items) + leak + gates + lineage + mix)
+    extra += _card("Leakage for both agents", "", _table(["Metric", "Clean", "Naive", "Inflation (pts)"], leak_tv, (1, 2, 3)))
+    extra += _card("Check details", "", f'<div class="grid2" style="margin:0">'
+                   f'{_gate_card("Clean split", "", qc["time"])}{_gate_card("Naive split", "", qc["naive"])}</div>')
+    return (_page_head(1, "Can we trust the test data?", "The test set must be clean, leak-free and newer than the corpus.")
+            + _findings(state, items) + leak + gate + _details(extra))
 
 
 def _agent_page(results, state, t_clean):
@@ -477,34 +530,20 @@ def _agent_page(results, state, t_clean):
     eval_rows = (results.get("eval_rows") or {}).get("time", [])
     v1, v2 = t_clean["v1_nearest"], t_clean["v2_vote"]
     score_rows = [[_e(label), _pct(v1[m]["rate"]), _pct(v2[m]["rate"]), _delta(v1[m]["rate"], v2[m]["rate"])] for m, label in METRICS]
-    score_rows.append(["Escalated when not needed <span class=\"muted\">(lower is better)</span>",
+    score_rows.append(['Escalated when not needed <span class="muted">(lower is better)</span>',
                        _pct(v1["over_escalation"]["rate"]), _pct(v2["over_escalation"]["rate"]),
                        _delta(v2["over_escalation"]["rate"], v1["over_escalation"]["rate"])])
-    scores = _card("Scores on the clean split", f'{v2["product_match"]["n"]} test complaints. Change is v2 minus v1, in percentage points.',
-                   _table(["Metric", "v1 nearest", "v2 vote", "Change"], score_rows, (1, 2, 3)))
-    reg_rows = [[_e(label), _num(reg[m]["fixed"]), _num(reg[m]["broken"]), _e(", ".join(reg[m]["broken_examples"]) or "-")]
-                for m, label in METRICS]
-    regression = _card("What v2 fixed and broke", "Fixed: v1 wrong, v2 right. Broken: v1 right, v2 wrong. Averages can hide these trade-offs.",
-                       _table(["Metric", "Fixed", "Broken", "Broken examples"], reg_rows, (1, 2)))
-    esc = ""
-    product = ""
-    confusion = ""
-    worst = None
+    scores = _card("v1 vs v2", f'{v2["product_match"]["n"]} test complaints. Change is in percentage points.',
+                   _table(["Metric", "v1 (old)", "v2 (new)", "Change"], score_rows, (1, 2, 3)))
+    broken = reg["product_match"]["broken"] + reg["action_match"]["broken"]
+    items = [
+        f'v2 gets <strong>{_pct(v2["product_match"]["rate"])}</strong> of products right, up from {_pct(v1["product_match"]["rate"])}.',
+        f'It fixed {reg["product_match"]["fixed"] + reg["action_match"]["fixed"]} mistakes and broke <strong>{broken}</strong> cases v1 had right.',
+        f'It made {_pct(v2["guardrail"]["rate"], 0)} of required escalations without escalating everything.',
+    ]
+    extra = _card("What v2 fixed and broke", "", _table(["Metric", "Fixed", "Broken"],
+                  [[_e(label), _num(reg[m]["fixed"]), _num(reg[m]["broken"])] for m, label in METRICS], (1, 2)))
     if eval_rows:
-        need = {r["complaint_id"]: r["expected_escalate"] for r in eval_rows}
-        names = [("caught", "Escalated when required"), ("missed", "Missed a required escalation"),
-                 ("over", "Escalated when not needed"), ("quiet", "Correctly left alone")]
-        counts = {}
-        for agent in ("v1_nearest", "v2_vote"):
-            c = {k: 0 for k, _ in names}
-            for o in runs[("time", agent)]["outputs"]:
-                req, did = need.get(o["complaint_id"]), bool(o.get("escalate"))
-                if req is None:
-                    continue
-                c["caught" if req and did else "missed" if req else "over" if did else "quiet"] += 1
-            counts[agent] = c
-        esc = _card("Escalation outcomes", "Counts across the test set. Missing a required escalation is the costly mistake.",
-                    _table(["Outcome", "v1", "v2"], [[_e(l), _num(counts["v1_nearest"][k]), _num(counts["v2_vote"][k])] for k, l in names], (1, 2)))
         by_id = {r["complaint_id"]: r["product"] for r in eval_rows}
         stats = defaultdict(lambda: [0, 0])
         for p in runs[("time", "v2_vote")]["per_case"]:
@@ -513,110 +552,83 @@ def _agent_page(results, state, t_clean):
                 stats[prod][1] += 1
                 stats[prod][0] += bool(p["product_match"])
         prod_rows = sorted(((k, v[0] / v[1], v[0], v[1]) for k, v in stats.items() if v[1]), key=lambda r: r[1])
-        worst = prod_rows[0] if prod_rows else None
-        product = _card("v2 accuracy by product", "Sorted from weakest to strongest. The overall score hides where the agent struggles.",
-                        f'<div class="chart">{_hbars([(_short_product(p), r, f"{_short_product(p)}: {c} of {n} right") for p, r, c, n in prod_rows], "--v2", label_w=220)}</div>'
-                        + _tv(["Product", "Right", "Cases", "Accuracy"], [[_e(p), _num(c), _num(n), _pct(r)] for p, r, c, n in prod_rows], (1, 2, 3)))
+        if prod_rows:
+            w = prod_rows[0]
+            items.append(f'Weakest product: <strong>{_e(_short_product(w[0]))}</strong>, {w[2]} of {w[3]} right.')
+            extra += _card("v2 accuracy by product", "Weakest first.",
+                           f'<div class="chart">{_hbars([(_short_product(p), r, f"{_short_product(p)}: {c} of {n} right") for p, r, c, n in prod_rows], "--v2", label_w=220)}</div>')
         pairs = Counter((_short_product(by_id[o["complaint_id"]]), _short_product(o["product"] or "none"))
                         for o in runs[("time", "v2_vote")]["outputs"]
-                        if o["complaint_id"] in by_id and o["product"] != by_id[o["complaint_id"]]).most_common(6)
-        confusion = _card("Products v2 mixes up", "The most common wrong answers. Repeated pairs point to product labels that overlap.",
-                          _table(["Real product", "v2 said", "Cases"], [[_e(a), _e(b), _num(n)] for (a, b), n in pairs], (2,))
-                          if pairs else '<p class="muted">v2 got every product right.</p>')
-    items = [
-        f'v2 gets <strong>{_pct(v2["product_match"]["rate"])}</strong> of products right, up from {_pct(v1["product_match"]["rate"])} for v1.',
-        f'v2 fixed <strong>{reg["product_match"]["fixed"]}</strong> product mistakes and <strong>{reg["action_match"]["fixed"]}</strong> escalation mistakes, '
-        f'and broke <strong>{reg["product_match"]["broken"] + reg["action_match"]["broken"]}</strong> cases that v1 had right.',
-        f'It escalated {_pct(v2["over_escalation"]["rate"], 0)} of complaints that did not need it, so its perfect guardrail score is not from escalating everything.',
-    ]
-    if worst:
-        items.append(f'Weakest product: <strong>{_e(_short_product(worst[0]))}</strong>, {worst[2]} of {worst[3]} right.')
-    return (_page_head(2, "How good is the agent?", "Scored on the clean split only. v1 is the old version, v2 the new one.")
-            + _findings(state, items) + scores + f'<div class="grid2">{regression}{esc}</div>' + product + confusion)
+                        if o["complaint_id"] in by_id and o["product"] != by_id[o["complaint_id"]]).most_common(5)
+        if pairs:
+            extra += _card("Products v2 mixes up", "", _table(["Real product", "v2 said", "Cases"],
+                                                             [[_e(a), _e(b), _num(n)] for (a, b), n in pairs], (2,)))
+    return (_page_head(2, "How good is the agent?", "Scored on the clean split. v1 is the old version, v2 the new one.")
+            + _findings(state, items) + scores + _details(extra))
 
 
 def _graders_page(results, state):
     table = results["gradercheck"]
     blind = [r for r in table if not r["good"]]
     unexpected = [r for r in blind if (r["scorer"], r["probe"]) not in KNOWN_BLIND_SPOTS]
-    total_tests = len(table)
     items = [
-        f"{total_tests} tests across {len({r['scorer'] for r in table})} scorers: correct answers they should accept, planted mistakes and cheating answers they should reject.",
+        "Each scorer was given correct answers, planted mistakes and cheating answers.",
         f"<strong>{len(unexpected)}</strong> unexpected blind spots." if unexpected
-        else "The scorers behind the agent's score caught every planted mistake and every cheating answer they apply to.",
-        f"<strong>{len(blind) - len(unexpected)}</strong> known gaps, listed under the matrix with the reason each one is acceptable.",
+        else "The scorers behind the agent's score caught every mistake and cheating answer.",
+        f"{len(blind) - len(unexpected)} known gaps, explained below the table.",
     ]
     notes = sorted({f'{SCORER_LABELS.get(r["scorer"])}: {KNOWN_BLIND_SPOTS[(r["scorer"], r["probe"])]}' for r in blind
                     if (r["scorer"], r["probe"]) in KNOWN_BLIND_SPOTS})
-    matrix = _card("Grader test matrix",
-                   "Rows are scorers, columns are tests. Green means the scorer did the right thing every time, red means it was fooled at least once, and a dot means the test does not apply. Hover a cell for counts.",
-                   _grader_matrix(table) + (f'<ul class="notes">{"".join(f"<li>{_e(n)}</li>" for n in notes)}</ul>' if notes else ""))
-    return (_page_head(3, "Can the code graders be cheated?", "A score is only as good as the grader, so each one is tested before its numbers are used.")
-            + _findings(state, items) + matrix)
+    summary = _card("Grader test results", "A cross means the scorer was fooled at least once.",
+                    _grader_summary(table) + (f'<ul class="notes">{"".join(f"<li>{_e(n)}</li>" for n in notes)}</ul>' if notes else ""))
+    extra = _card("Every test, every scorer", "Hover a cell for counts.", _grader_matrix(table))
+    return (_page_head(3, "Can the code graders be cheated?", "A score is only as good as the grader that produced it.")
+            + _findings(state, items) + summary + _details(extra))
 
 
 def _judge_page(judge, state):
-    head = _page_head(4, "Can we trust the LLM judge?", "An LLM rates each answer 0 to 3. Its evidence must be copied word for word from the complaint, or code caps the score at 1.")
+    head = _page_head(4, "Can we trust the LLM judge?", "gpt-4o-mini rates each answer 0 to 3 and must quote the complaint as evidence.")
     if judge.get("status") != "ran":
         return head + (f'<div class="empty"><strong>The LLM judge has not run.</strong> {_e(judge.get("message", ""))}'
-                       f'<br><span class="muted">Then run <code>python -m harness all --judge</code>. Answers are saved, so reruns cost nothing.</span></div>')
+                       f'<br><span class="muted">Then run <code>python -m harness all --judge</code>.</span></div>')
     probes = {p["probe"]: p for p in judge["probes"]}
     wrong = probes.get("planted: wrong product", {"good": 0, "n": 0})
-    cons, grd = judge["consistency"], judge["grounding"]
+    cons = judge["consistency"]
     pers = judge.get("persuasion", {"flips": 0, "chances": 0})
     items = [
-        f'{_e(judge["model"])} passed <strong>{wrong["n"] - wrong["good"]} of {wrong["n"]}</strong> answers with a deliberately wrong product.',
-        f'Adding "approved by a senior analyst" or a confident explanation flipped <strong>{pers["flips"]} of {pers["chances"]}</strong> verdicts it had gotten right.',
-        f'It gave the same score on {cons["repeats"]} repeat runs for {_pct(cons["rate"], 0)} of answers.',
-        "Use it as a second opinion next to the code checks, not as the only grader." if state == "crit" else "It held up on these tests.",
+        f'It passed <strong>{wrong["n"] - wrong["good"]} of {wrong["n"]}</strong> answers with a deliberately wrong product.',
+        f'It gave every agent answer the top score, so it is not telling good answers from weak ones.',
+        f'It was consistent ({_pct(cons["rate"], 0)} same score on repeat runs) and rarely swayed by persuasion ({pers["flips"]} of {pers["chances"]}).',
     ]
-    tiles = '<div class="tiles">' + "".join([
-        f'<div class="tile"><div class="label">Wrong products caught</div><div class="value">{wrong["good"]} of {wrong["n"]}</div><div class="note">should be all of them</div></div>',
-        f'<div class="tile"><div class="label">Same score on every repeat</div><div class="value">{_pct(cons["rate"], 0)}</div><div class="note">{cons["identical_scores"]} of {cons["cases"]} answers</div></div>',
-        f'<div class="tile"><div class="label">Swayed by persuasion</div><div class="value">{pers["flips"]} of {pers["chances"]}</div><div class="note">verdicts flipped</div></div>',
-        f'<div class="tile"><div class="label">Evidence copied word for word</div><div class="value">{_pct(grd["grounded"] / grd["verdicts"] if grd["verdicts"] else None, 0)}</div><div class="note">{grd["capped_by_code"]} scores capped by code</div></div>',
-    ]) + "</div>"
-    bars, tv = [], []
+    if judge.get("score_distribution", {}).get("3", 0) != judge.get("scored_cases"):
+        items[1] = f'Its scores spread across the scale on {judge["scored_cases"]} agent answers.'
+    items.append("Use it as a second opinion next to the code checks, not as the only grader." if state == "crit" else "It held up on these tests.")
+    bars = []
     for key, label in JUDGE_PROBES:
         p = probes.get(key)
         if p and p["n"]:
             verb = "passed" if p["kind"] == "correct" else "failed"
             bars.append((label, p["rate"], f'{label}: {verb} {p["good"]} of {p["n"]}'))
-            tv.append([_e(label), _num(p["good"]), _num(p["n"]), _pct(p["rate"], 0)])
-    fooled = _card("Can the judge be fooled?", "How often the judge did the right thing on each test. Every bar should reach the line at 100%.",
-                   f'<div class="chart">{_hbars(bars, "--judge", label_w=340, target=1.0)}</div>' + _tv(["Test", "Right", "Out of", "Rate"], tv, (1, 2, 3)))
-    dist = judge.get("score_distribution", {})
-    n_scored = judge["scored_cases"]
-    dist_card = _card("How the judge scored the agent", f"{n_scored} agent answers. A useful judge spreads its scores across the scale.",
-                      _table(["Score", "Meaning", "Answers", "Share"],
-                             [[str(s), _e(SCORE_MEANING[s]), _num(dist.get(str(s), 0)), _pct(dist.get(str(s), 0) / n_scored if n_scored else None, 0)]
-                              for s in range(4)], (2, 3)))
-    cm = judge.get("confusion")
-    kappa = judge.get("kappa_with_code_scorer")
-    cm_card = ""
-    if cm:
-        note = ("Kappa is 0 because the judge passed every answer, so its high agreement says nothing about its judgment."
-                if judge.get("judge_pass_rate") == 1.0 else
-                f"Kappa {kappa:.2f} corrects agreement for chance. Above 0.6 is usually read as good." if kappa is not None else "")
-        cm_card = _card("Judge versus the product label", f'Agreement {_pct(judge["agreement_with_code_scorer"], 0)}. {_e(note)}',
-                        f'<div class="cm"><div></div><div class="h">Label says right</div><div class="h">Label says wrong</div>'
-                        f'<div class="h">Judge passes</div><div class="agree"><span class="n">{cm["both_pass"]}</span>agree</div>'
-                        f'<div class="disagree"><span class="n">{cm["judge_only"]}</span>judge too lenient?</div>'
-                        f'<div class="h">Judge fails</div><div class="disagree"><span class="n">{cm["label_only"]}</span>judge too strict?</div>'
-                        f'<div class="agree"><span class="n">{cm["both_fail"]}</span>agree</div></div>')
-    ex = ""
+    fooled = _card("Can the judge be fooled?", "How often it did the right thing. Every bar should reach the line.",
+                   f'<div class="chart">{_hbars(bars, "--judge", label_w=340, target=1.0)}</div>')
+    extra = ""
     if judge.get("fooled_examples"):
         rows = [[_e(f["snippet"] + "..."), _e(_short_product(f["gold_product"])), _e(_short_product(f["wrong_product"])),
-                 _e(f'{f["judge_score"]} of 3'), _e(f["reason"])] for f in judge["fooled_examples"]]
-        ex = _card("Wrong answers the judge passed", "The planted product was wrong and the judge passed it anyway. Some of its reasons contradict its own score.",
-                   _table(["Complaint starts", "Real product", "Planted product", "Judge", "Judge's reason"], rows))
-    dis = ""
-    if judge.get("disagreements"):
-        rows = [[_e(d["complaint_id"]), _e(_short_product(d["gold_product"])), _e(_short_product(d["agent_product"])),
-                 _e(f'{d["judge_score"]} of 3'), _e(d["reason"])] for d in judge["disagreements"]]
-        dis = _card(f'Where the judge and the label disagree ({judge["disagreement_count"]})', "Read these by hand. Either the judge is wrong or the CFPB label is.",
-                    _table(["Complaint", "Label", "Agent said", "Judge", "Judge's reason"], rows))
-    return head + _findings(state, items) + tiles + fooled + f'<div class="grid2">{dist_card}{cm_card}</div>' + ex + dis
+                 _e(f'{f["judge_score"]} of 3'), _e(f["reason"])] for f in judge["fooled_examples"][:4]]
+        extra += _card("Wrong answers it passed", "Some of its reasons contradict its own score.",
+                       _table(["Complaint starts", "Real product", "Planted product", "Score", "Judge's reason"], rows))
+    dist = judge.get("score_distribution", {})
+    n_scored = judge["scored_cases"]
+    extra += _card("How it scored the agent", f"{n_scored} agent answers.",
+                   _table(["Score", "Meaning", "Answers"],
+                          [[str(s), _e(SCORE_MEANING[s]), _num(dist.get(str(s), 0))] for s in range(4)], (2,)))
+    kappa = judge.get("kappa_with_code_scorer")
+    extra += _card("Agreement with the product label",
+                   "Kappa corrects agreement for chance. 0 means no better than chance.",
+                   _table(["Measure", "Value"], [["Agreement", _pct(judge["agreement_with_code_scorer"], 0)],
+                                                 ["Cohen's kappa", f"{kappa:.2f}" if kappa is not None else "n/a"],
+                                                 ["Disagreements", _num(judge["disagreement_count"])]], (1,)))
+    return head + _findings(state, items) + fooled + _details(extra)
 
 
 GLOSSARY = """
@@ -639,7 +651,7 @@ def render(results):
     vstate = {v[0]: v[1] for v in verdicts}
     verdict_html = "".join(
         f'<a class="verdict {state}" href="#{anchor}" data-page="{anchor}"><div class="q">{_e(q)}</div>{_chip(state, chip)}'
-        f'<div class="big">{_e(big)}</div><div class="why">{_e(why)}</div></a>'
+        f'<div class="big">{_e(big)}</div></a>'
         for anchor, state, chip, q, big, why in verdicts)
     t_clean = {a: runs[("time", a)]["totals"] for a in ("v1_nearest", "v2_vote")}
     t_naive = {a: runs[("naive", a)]["totals"] for a in ("v1_nearest", "v2_vote")}
@@ -663,7 +675,7 @@ def render(results):
 <body>
 <header class="topbar"><div class="inner"><div class="row"><div>
 <div class="eyebrow">Eval QC harness</div><h1>Can this agent's score be trusted?</h1>
-<p class="meta">Complaint-routing agent &middot; {_e(", ".join(s["file"] for s in sources))} &middot; generated {_e(results.get("generated_at", ""))}</p></div>
+<p class="meta">Complaint-routing agent &middot; {results["splits"]["time"]["eval_rows"]} test complaints &middot; generated {_e(_nice_time(results.get("generated_at", "")))}</p></div>
 <button class="theme" id="theme" type="button">Dark theme</button></div>
 <nav class="tabs" role="tablist">{tabs}</nav>
 </div></header>
