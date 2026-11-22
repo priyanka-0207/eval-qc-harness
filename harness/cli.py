@@ -2,7 +2,7 @@ import argparse
 import sys
 from datetime import datetime
 
-from . import bronze, config, dashboard, gold, gradercheck, judgecheck, labels, qc, regression, report, silver, store
+from . import bronze, config, dashboard, gold, gradercheck, headline, judgecheck, labels, qc, regression, report, silver, store
 from .agent import run_agent
 from .judge import make_judge
 from .scorers import score
@@ -67,6 +67,7 @@ def run_all(ci=False, use_judge=False, judge_client=None):
         "judge": judge_result,
         "eval_rows": {k: v[1] for k, v in splits.items()},
     }
+    results["headline"] = headline.build(results, splits, runs)
     path = report.render(results)
     html_path = dashboard.render(results)
     store.write_json(config.REPORTS / "results.json", {
@@ -105,34 +106,91 @@ def main(argv=None):
     sub.add_parser("publish", help="copy the latest dashboard to docs/index.html for GitHub Pages")
     p_demo = sub.add_parser("demo", help="full run on generated sample rows, written to demo_run/")
     p_demo.add_argument("--judge", action="store_true", help="add the LLM judge (needs an API key in .env)")
+    p_env = sub.add_parser("env", help="RL environment: 30 tasks, task QC gate, agents, regression report")
+    p_env.add_argument("--dirty", action="store_true", help="add 3 planted bad tasks to show the gate catching them")
+    p_env.add_argument("--ci", action="store_true", help="exit 1 if the task QC gate fails")
+    p_llm = sub.add_parser("env-llm", help="RL environment with an open model as the agent, run locally through Ollama")
+    p_llm.add_argument("--model", default="gemma4", help="Ollama model name (default gemma4)")
+    p_llm.add_argument("--attempts", type=int, default=1, help="attempts per task (more than 1 samples at temperature 0.7)")
+    p_llm.add_argument("--task", action="append", help="run only this task id (repeatable)")
     args = parser.parse_args(argv)
     if args.cmd == "all":
+        default_set = config.ROOT / "datasets" / "cfpb-200"
+        if not any(config.BRONZE_DIR.glob("*.csv")) and any(default_set.glob("*.csv")):
+            print(f"no CSV in {config.BRONZE_DIR}, using {default_set}")
+            config.BRONZE_DIR = default_set
         run_all(ci=args.ci, use_judge=args.judge)
     elif args.cmd == "demo":
         from . import demo
         demo.run(use_judge=args.judge)
+    elif args.cmd == "env-llm":
+        from .env import llm_run
+        res = llm_run.run(model=args.model, attempts=args.attempts, task_ids=args.task)
+        s = res["summary"]
+        print(f"report: {res['report']}")
+        print(f"{args.model}: {s['all']['passed']}/{s['all']['tasks']} passed "
+              + ", ".join(f"{k} {v['passed']}/{v['tasks']}" for k, v in s["by_family"].items()))
+        print(f"rewarded wrong answers: {len(s['rewarded_wrong_answers'])}, tool errors: {s['tool_errors']}")
+    elif args.cmd == "env":
+        run_env(dirty=args.dirty, ci=args.ci)
     elif args.cmd == "agreement":
         print(labels.agreement())
     elif args.cmd == "publish":
         publish()
 
 
+def run_env(dirty=False, ci=False):
+    from .env import run as env_run
+    res = env_run.run(dirty=dirty)
+    print(f"report:    {res['report']}")
+    print(f"tasks:     {res['task_count']} ({', '.join(f'{k} {v}' for k, v in res['tasks_per_family'].items())})")
+    print(f"task QC gate: {res['gate']['gate']}")
+    for c in res["gate"]["checks"]:
+        print(f"  {c['status']}  {c['check']}: {c['detail']}")
+    for agent, row in res["pass_rates"].items():
+        cells = "  ".join(f"{k} {v['passed']}/{v['tasks']}" for k, v in row.items())
+        print(f"{agent:17} {cells}")
+    reg = res["regression"]
+    print(f"v1 -> v2: fixed {len(reg['fixed'])}, broken {len(reg['broken'])} {reg['broken']}")
+    if ci and res["gate"]["gate"] != "PASS":
+        sys.exit(1)
+    return res
+
+
+OLD_PAGES = ("data", "agent", "graders", "judge")
+
+
 def publish():
     import shutil
-    real = config.ROOT / "reports" / "site"
-    demo_site = config.ROOT / "demo_run" / "reports" / "site"
-    source = real if (real / "index.html").exists() else demo_site
-    if not (source / "index.html").exists():
-        sys.exit("No dashboard found. Run `python -m harness all` (or `demo`) first.")
+    from . import landing
+    sources = {"real": config.ROOT / "reports", "synthetic": config.ROOT / "demo_run" / "reports"}
+    found = {k: v for k, v in sources.items() if (v / "site" / "index.html").exists() and (v / "results.json").exists()}
+    if not found:
+        sys.exit("No dashboard found. Run `python run.py --dataset cfpb-200` (or `--dataset synthetic`) first.")
     docs = config.ROOT / "docs"
     docs.mkdir(exist_ok=True)
-    for item in docs.iterdir():
-        if item.is_dir():
-            shutil.rmtree(item)
-        else:
-            item.unlink()
-    shutil.copytree(source, docs, dirs_exist_ok=True)
-    kind = "real data" if source == real else "demo data"
-    pages = sorted(str(f.relative_to(docs)).replace("\\", "/") for f in docs.rglob("index.html"))
-    print(f"published {kind} dashboard to {docs}: {', '.join(pages)}")
+    for f in sorted(docs.rglob("*"), key=lambda p: -len(p.parts)):
+        try:
+            f.rmdir() if f.is_dir() else f.unlink()
+        except OSError:
+            pass
+    for kind, base in found.items():
+        shutil.copytree(base / "site", docs / kind, dirs_exist_ok=True)
+    lead = "real" if "real" in found else "synthetic"
+    head = store.read_json(found[lead] / "results.json").get("headline")
+    if head is None:
+        sys.exit(f"{found[lead] / 'results.json'} has no headline. Re-run the {lead} dataset first.")
+    from .env import page as env_page
+    has_env = env_page.build(docs / "env" / "index.html") is not None
+    (docs / "index.html").write_text(landing.render(head, "real" in found, "synthetic" in found, has_env=has_env),
+                                     encoding="utf-8")
+    old_source = found.get("synthetic", found[lead]) / "site"
+    for key in OLD_PAGES:
+        (docs / key).mkdir(exist_ok=True)
+        html = (old_source / key / "index.html").read_text(encoding="utf-8")
+        (docs / key / "index.html").write_text(html.replace('href="../../', 'href="../'), encoding="utf-8")
+    (docs / ".nojekyll").write_text("", encoding="utf-8")
+    if landing.update_readme(config.ROOT / "README.md", head):
+        print("README results block updated")
+    print(f"published to {docs}: overview from the {lead} run, full reports for {', '.join(found)}")
     return docs

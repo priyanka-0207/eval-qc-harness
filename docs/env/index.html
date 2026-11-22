@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RL Environment | Eval QC Harness</title>
+<meta name="description" content="30 tasks with code-checked rewards and a QC gate that catches leaked answers, lenient rewards and duplicated tasks.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{color-scheme:light;
+--page:#f3eee3;--surface:#fdfbf6;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e6e0d3;--axis:#c9c1b0;
+--border:rgba(60,45,20,.11);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
+--good:#0ca30c;--good-ink:#006300;--warn:#fab219;--warn-ink:#8a5a00;--crit:#d03b3b;--crit-ink:#b42828;
+--good-tint:rgba(12,163,12,.13);--crit-tint:rgba(208,59,59,.13);
+--top:#16171a;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0;--shadow:0 1px 2px rgba(60,45,20,.07),0 1px 1px rgba(60,45,20,.05);--top-line:transparent}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
+--border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
+--good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
+--good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}}
+:root[data-theme="dark"]{color-scheme:dark;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
+--border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
+--good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
+--good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .29 0 0 0 0 .2 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}}
+:root[data-theme="dark"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topbar{background:var(--top);color:var(--top-ink);border-bottom:1px solid var(--top-line)}
+.topbar .inner{max-width:1120px;margin:0 auto;padding:22px 16px 0}
+.topbar .row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--top-muted)}
+.topbar h1{font-size:26px;font-weight:650;margin:2px 0 4px;letter-spacing:-.01em}
+.topbar .meta{color:var(--top-muted);font-size:14px;margin:0}
+button.theme{font:inherit;font-size:13px;background:transparent;color:var(--top-ink);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 12px;cursor:pointer}
+nav.tabs{display:flex;gap:4px;margin-top:18px;overflow-x:auto}
+nav.tabs a{color:var(--top-muted);text-decoration:none;font-size:14px;padding:10px 14px;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs a:hover{color:var(--top-ink)}
+nav.tabs a.active{color:var(--top-ink);border-bottom-color:var(--clean)}
+nav.tabs a b{color:var(--top-ink);font-weight:600;margin-right:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 16px 48px}
+.banner{background:var(--banner);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:6px;padding:10px 14px;margin-bottom:18px}
+h2{font-size:21px;font-weight:650;margin:0;letter-spacing:-.01em}
+h3{font-size:15px;font-weight:600;margin:0 0 2px}
+p{margin:0}
+.sub{color:var(--ink-2)}
+.muted{color:var(--muted)}
+.verdicts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
+@media (max-width:900px){.verdicts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.verdicts{grid-template-columns:1fr}}
+.verdict{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-top:4px solid var(--muted);border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;display:block}
+.verdict:hover{border-color:var(--axis)}
+.verdict.current{box-shadow:0 0 0 2px var(--clean)}
+.verdict.good{border-top-color:var(--good)}.verdict.warn{border-top-color:var(--warn)}.verdict.crit{border-top-color:var(--crit)}
+.verdict .q{color:var(--ink-2);font-size:13px;margin-bottom:6px}
+.verdict .big{font-size:18px;font-weight:650;line-height:1.3;margin:10px 0 0}
+.verdict .why{color:var(--ink-2);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
+.chip .ic{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
+.chip.good{color:var(--good-ink)}.chip.good .ic{background:var(--good)}
+.chip.warn{color:var(--warn-ink)}.chip.warn .ic{background:var(--warn);color:#0b0b0b}
+.chip.crit{color:var(--crit-ink)}.chip.crit .ic{background:var(--crit)}
+.chip.none{color:var(--ink-2)}.chip.none .ic{background:var(--muted)}
+.page-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.num-badge{flex:none;width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700}
+.findings{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--clean);border-radius:6px;padding:12px 16px;margin-bottom:16px}
+.findings.good{border-left-color:var(--good)}.findings.warn{border-left-color:var(--warn)}.findings.crit{border-left-color:var(--crit)}
+.findings ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
+.findings li{margin:3px 0}
+.findings strong{color:var(--ink)}
+.card{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px}
+.card-title{margin-bottom:8px}
+.how{color:var(--muted);font-size:13px;margin-top:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-bottom:16px}
+.grid2>.card{margin-bottom:0}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.tile .label{color:var(--ink-2);font-size:14px}
+.tile .value{font-size:25px;font-weight:650;margin-top:2px}
+.tile .note{color:var(--muted);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;padding:0;list-style:none;color:var(--ink-2);font-size:14px}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.chart{overflow-x:auto}
+.chart svg{width:100%;min-width:540px;height:auto;display:block}
+.chart text{fill:var(--ink-2);font-size:12px}
+.chart text.ink{fill:var(--ink)}
+.chart text.strong{fill:var(--ink);font-weight:600}
+.chart .tick{fill:var(--muted);font-variant-numeric:tabular-nums}
+details.tv{margin-top:8px}
+details.tv summary{cursor:pointer;color:var(--ink-2);font-size:13px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:4px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{color:var(--ink-2);font-weight:600;font-size:13px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:600}
+.pos{color:var(--good-ink);font-weight:600}.neg{color:var(--crit-ink);font-weight:600}
+ul.checks{list-style:none;margin:8px 0 0;padding:0}
+ul.checks li{display:grid;grid-template-columns:22px 1fr;gap:4px;padding:7px 0;border-top:1px solid var(--grid)}
+ul.checks li:first-child{border-top:0}
+.icon{font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;margin-top:2px}
+.icon.ok{background:var(--good)}.icon.bad{background:var(--crit)}
+.detail{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.split-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+table.matrix{min-width:860px}
+table.matrix th.col{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;white-space:nowrap;padding:8px 4px;height:150px;vertical-align:bottom}
+table.matrix th.grp{text-align:center;color:var(--muted);font-weight:600;border-bottom:1px solid var(--grid)}
+table.matrix td.cell{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;padding:8px 4px;border-left:2px solid var(--surface)}
+td.cell.ok{background:var(--good-tint)}td.cell.bad{background:var(--crit-tint);font-weight:600}td.cell.na{color:var(--muted)}
+td.cell .mk{font-size:11px;margin-right:3px}
+td.cell.ok .mk{color:var(--good-ink)}td.cell.bad .mk{color:var(--crit-ink)}
+.notes{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;font-size:14px;max-width:440px}
+.cm div{padding:10px;border-radius:6px;text-align:center}
+.cm .h{color:var(--ink-2);font-weight:600;font-size:13px;padding:6px}
+.cm .agree{background:var(--good-tint)}.cm .disagree{background:var(--crit-tint)}
+.cm .n{font-size:22px;font-weight:650;display:block}
+.empty{border:1px dashed var(--axis);border-radius:8px;padding:18px;color:var(--ink-2);background:var(--surface)}
+code{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12px;background:var(--page);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+a.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px}
+a.btn:hover{border-color:var(--axis)}
+details.terms{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-top:24px}
+details.terms summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
+dl.glossary{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:6px 16px;margin:12px 0 4px;font-size:14px}
+dl.glossary dt{font-weight:600}dl.glossary dd{margin:0;color:var(--ink-2)}
+#tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:none;z-index:10;max-width:280px}
+[data-tip]:focus{outline:2px solid var(--clean);outline-offset:2px}
+.sitebar{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sitebar a{color:var(--top-muted);text-decoration:none}.sitebar a:hover,.sitebar a.on{color:var(--top-ink)}
+footer{color:var(--muted);font-size:13px;margin-top:20px;border-top:1px solid var(--grid);padding-top:14px}
+
+details.more{margin:4px 0 16px}
+details.more>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+";font-weight:700}
+details.more[open]>summary::before{content:"\2212"}
+details.more>summary:hover{color:var(--ink);border-color:var(--axis)}
+.more-body{margin-top:14px}
+.cnt{font-variant-numeric:tabular-nums;margin-left:4px;color:var(--ink-2)}
+td .icon{vertical-align:middle;margin-top:0}
+@media print{.topbar{background:#fff;color:#000}nav.tabs,button.theme,.pager{display:none}.page[hidden]{display:block!important}.card,.verdict,.tile{break-inside:avoid}}
+
+.hero h1{font-size:32px;line-height:1.2;margin:4px 0 8px;max-width:760px}
+.hero .lede{color:var(--top-muted);font-size:17px;max-width:720px;margin:0 0 18px}
+.links{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:22px}
+.links a{color:var(--top-ink);text-decoration:none;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:8px 14px}
+.links a.primary{background:var(--top-ink);color:var(--top);border-color:var(--top-ink)}
+.links a:hover{border-color:var(--top-ink)}
+.run-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.big3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:860px){.big3{grid-template-columns:1fr}}
+.big3 .tile{padding:16px 18px;border-top:4px solid var(--clean)}
+.big3 .tile.crit{border-top-color:var(--crit)}.big3 .tile.good{border-top-color:var(--good)}
+.big3 .value{font-size:31px;line-height:1.15;margin:6px 0 4px}
+.big3 .value small{font-size:16px;font-weight:600;color:var(--ink-2)}
+.big3 .note{font-size:14px;color:var(--ink-2)}
+.rates{list-style:none;margin:8px 0 0;padding:0}
+.rates li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid var(--grid);font-size:14px}
+.rates li:first-child{border-top:0}
+.rates b{font-variant-numeric:tabular-nums;font-size:16px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+@media (max-width:700px){.pair{grid-template-columns:1fr}}
+.quote{background:var(--page);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-size:14px;color:var(--ink-2)}
+.quote .who{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.outcome{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media (max-width:700px){.outcome{grid-template-columns:1fr}}
+.outcome div{border-radius:6px;padding:10px 14px;font-size:14px}
+.outcome .before{background:var(--crit-tint)}.outcome .after{background:var(--good-tint)}
+.outcome b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+pre.try{background:var(--top);color:var(--top-ink);border-radius:8px;padding:14px 16px;white-space:pre-wrap;word-break:break-all;font:13px/1.6 "IBM Plex Mono",ui-monospace,Consolas,monospace;margin:8px 0 0}
+ul.plain{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
+ul.plain li{margin:3px 0}
+footer a{color:var(--ink-2)}
+
+.tiles3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:860px){.tiles3{grid-template-columns:1fr}}
+.tiles3 .tile{padding:16px 18px;border-top:4px solid var(--clean)}
+.tiles3 .tile p{margin:6px 0 0;font-size:14px;color:var(--ink-2)}
+.tiles3 .tile .reward{margin-top:10px;padding-top:8px;border-top:1px solid var(--grid)}
+.tiles3 .tile .reward b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+.caught{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:960px){.caught{grid-template-columns:1fr}}
+.caught .card{border-top:4px solid var(--crit)}
+.caught .quote{margin-top:8px}
+mark{background:var(--crit-tint);color:inherit;padding:0 2px;border-radius:3px}
+pre.trace{background:var(--page);border:1px solid var(--border);border-radius:6px;padding:12px 14px;overflow-x:auto;font:12px/1.6 "IBM Plex Mono",ui-monospace,Consolas,monospace;margin:8px 0 0;white-space:pre}
+</style></head>
+<body>
+<header class="topbar"><div class="inner"><nav class="sitebar"><a href="../">Overview</a><a href="../real/">Real CFPB run</a><a href="../synthetic/">Synthetic run</a><a href="./" class="on">RL environment</a></nav><div class="row"><div>
+<div class="eyebrow">Eval QC harness</div><h1>Can this reward be trusted?</h1>
+<p class="meta">RL environment &middot; 30 tasks in 3 families &middot; every reward is code &middot;
+generated Nov 20, 2026, 1:05 AM</p></div>
+<button class="theme" id="theme" type="button">Dark theme</button></div>
+<div style="height:22px"></div></div></header>
+<main class="wrap">
+<div class="banner"><strong>Synthetic tasks, scripted agents.</strong> The tasks are generated, and the agents are short
+Python scripts, not language models. The page shows what the task gate catches and how the rewards behave, not model
+performance.</div>
+
+<h2>The tasks</h2>
+<div class="tiles3"><div class="tile"><div class="label">Support tickets &middot; 10 tasks</div>
+<p>The agent resolves a damaged-item ticket with six tools: get_policy, get_customer, list_orders, issue_refund, escalate and reply.</p><div class="reward"><b>Reward pays only for</b><p>The right refund for the right amount, or a reply, or an escalation, and nothing else.</p></div></div><div class="tile"><div class="label">Data QC &middot; 10 tasks</div>
+<p>The agent queries a payments table in read-only SQLite and flags every row that breaks a rule in the spec.</p><div class="reward"><b>Reward pays only for</b><p>The flagged rows match the bad rows exactly.</p></div></div><div class="tile"><div class="label">Help center retrieval &middot; 10 tasks</div>
+<p>The agent searches help center pages, reads one, and answers with the page id, the value and a 5 to 40 word quote copied from that page.</p><div class="reward"><b>Reward pays only for</b><p>Right page, right value, and a quote that is really on the page and contains the value.</p></div></div></div>
+
+<section class="card"><h3>Task QC gate</h3>
+<p class="sub">The gate runs before any agent is scored. It plays a reference solution, an agent that does nothing, and
+seven shortcut agents on every task, then checks the tasks themselves. Three bad tasks were planted in the second set
+to show what it catches.</p>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Clean set (30 tasks)</th><th class="">With 3 planted bad tasks (33 tasks)</th></tr></thead><tbody><tr><td class="">Every task is solvable by the reference solution</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">30 of 30 solved</div></td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">33 of 33 solved</div></td></tr><tr><td class="">Doing nothing earns no reward</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">null agent rewarded on 0 of 30</div></td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">null agent rewarded on 0 of 33</div></td></tr><tr><td class="">No shortcut agent is rewarded for a wrong answer</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">0 rewarded wrong answers, 6 shortcut passes that match the reference</div></td><td class=""><span class="chip crit"><span class="ic">&#10005;</span>Fail</span><div class="how">1 rewarded wrong answers, 6 shortcut passes that match the reference: flag_all on dataqc-dirty-lenient</div></td></tr><tr><td class="">No task shows its answer in the prompt or spec</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">0 tasks leak</div></td><td class=""><span class="chip crit"><span class="ic">&#10005;</span>Fail</span><div class="how">1 tasks leak: retrieval-dirty-leak (90 days)</div></td></tr><tr><td class="">No duplicated tasks</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">0 near-duplicate pairs (same data, prompt 3-word-shingle Jaccard &gt;= 0.8)</div></td><td class=""><span class="chip crit"><span class="ic">&#10005;</span>Fail</span><div class="how">1 near-duplicate pairs (same data, prompt 3-word-shingle Jaccard &gt;= 0.8): tickets-01 ~ tickets-dirty-dup (0.833)</div></td></tr><tr><td class="">Every outcome appears in at least 2 tasks</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">tickets: refund 4, reply 3, escalate 3; dataqc: unique 3, not_null 3, positive 4, not_after 3, allowed 3, references 4; retrieval: variant_a 5, variant_b 5</div></td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">tickets: refund 5, reply 3, escalate 3; dataqc: unique 3, not_null 3, positive 5, not_after 3, allowed 4, references 4; retrieval: variant_a 5, variant_b 6</div></td></tr><tr><td class="">Rewards are identical on a repeat run</td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">130 of 130 runs repeat exactly</div></td><td class=""><span class="chip good"><span class="ic">&#10003;</span>Pass</span><div class="how">143 of 143 runs repeat exactly</div></td></tr></tbody></table></div></section>
+
+<h2>Caught by the gate</h2>
+<div class="caught"><section class="card"><h3>Answer leaked in the prompt</h3>
+<p class="how">Task <code>retrieval-dirty-leak</code>. The answer, <strong>90 days</strong>, is written
+into the question, so an agent can copy it without reading a single page.</p>
+<div class="quote">Customer question: Is the dispute window for business credit cards <mark>90 days</mark>? Find the help center page that answers it, then call answer with the doc_id, the value, and a quote of 5 to 40 words copied from that page.</div></section><section class="card"><h3>Reward too lenient</h3>
+<p class="how">Task <code>dataqc-dirty-lenient</code>. Only 4 rows break a rule (rows 15, 20, 21, 22).
+The reward only checked that those rows were somewhere in the flagged list, so the <code>flag_all</code>
+shortcut flagged all 24 rows and was paid for it.</p>
+<div class="outcome"><div class="before"><b>Lenient reward</b>Flagging every row passes.</div>
+<div class="after"><b>Exact reward</b>The flagged rows must equal the bad rows.</div></div></section><section class="card"><h3>Duplicated task</h3>
+<p class="how">Tasks <code>tickets-01</code> and <code>tickets-dirty-dup</code> share the same data, and their prompts
+overlap 83% by 3-word phrases. Counting both gives one case double weight in every pass rate.</p>
+<div class="quote">Support ticket from customer C-104: &quot;My espresso machine showed up with a cracked water tank. I want my money back.&quot; Resolve it using the tools and the refund policy.</div><div class="quote">Support ticket from customer C-104: &quot;My espresso machine showed up with a cracked water tank. I want my money back, thanks.&quot; Resolve it using the tools and the refund policy.</div></section></div>
+
+<div class="grid2">
+<section class="card"><h3>Shortcut agents on the clean set</h3>
+<p class="sub">A reward that pays a shortcut is a reward an RL run will learn to game.</p>
+<div class="table-wrap"><table><thead><tr><th class="">Shortcut agent</th><th class="">What it does</th><th class="num">Tasks passed</th></tr></thead><tbody><tr><td class=""><code>null</code></td><td class="">Does nothing and submits</td><td class="num">0/30</td></tr><tr><td class=""><code>always_escalate</code></td><td class="">Escalates every ticket</td><td class="num">3/10</td></tr><tr><td class=""><code>reply_only</code></td><td class="">Sends a polite reply and never acts</td><td class="num">3/10</td></tr><tr><td class=""><code>refund_all_orders</code></td><td class="">Refunds every order the customer has</td><td class="num">0/10</td></tr><tr><td class=""><code>flag_all</code></td><td class="">Flags every row in the table</td><td class="num">0/10</td></tr><tr><td class=""><code>flag_last_rows</code></td><td class="">Flags the last three rows</td><td class="num">0/10</td></tr><tr><td class=""><code>whole_doc_quote</code></td><td class="">Quotes the entire page as evidence</td><td class="num">0/10</td></tr><tr><td class=""><code>echo_question</code></td><td class="">Answers with the question itself</td><td class="num">0/10</td></tr></tbody></table></div>
+<p class="how" style="margin-top:8px">The 6 shortcut passes all give the reference answer: escalating is the right call
+on 3 tickets, and replying is right on 3 others. None is a wrong answer that got paid.</p></section>
+<section class="card"><h3>Regression report: v1 to v2</h3>
+<p class="sub">Every change is compared task by task, so one broken case is visible even when the total goes up.</p>
+<div class="table-wrap"><table><thead><tr><th class="">Agent</th><th class="num">Support tickets</th><th class="num">Data QC</th><th class="num">Help center retrieval</th><th class="num">All</th></tr></thead><tbody><tr><td class="">v1</td><td class="num">4/10</td><td class="num">1/10</td><td class="num">4/10</td><td class="num">9/30</td></tr><tr><td class="">v2</td><td class="num">9/10</td><td class="num">10/10</td><td class="num">9/10</td><td class="num">28/30</td></tr></tbody></table></div>
+<div class="outcome"><div class="after"><b>Fixed: 20 tasks</b>tickets-05, tickets-06, tickets-07, tickets-08, tickets-09, tickets-10, dataqc-02, dataqc-03, dataqc-04, dataqc-05, dataqc-06, dataqc-07, dataqc-08, dataqc-09, dataqc-10, retrieval-01, retrieval-03, retrieval-05, retrieval-07, retrieval-09</div>
+<div class="before"><b>Broken: 1 task</b>tickets-03</div></div><p class="how" style="margin-top:12px">Trace of <code>v2</code> on
+<code>tickets-03</code> (reward 0). The rice cooker was delivered 30 days ago, and the policy
+refunds damage reported within 30 days. v2 compares with "under 30" instead of "30 or fewer", so it refuses a refund
+the policy allows. v1 refunded and passed.</p><pre class="trace">1. get_policy {} -&gt; &quot;Refund the full order amount when an item arrives damaged and the customer reports it within 30 days of deliv
+2. get_customer {&quot;customer_id&quot;: &quot;C-131&quot;} -&gt; {&quot;customer_id&quot;: &quot;C-131&quot;, &quot;account_flags&quot;: []}
+3. list_orders {&quot;customer_id&quot;: &quot;C-131&quot;} -&gt; [{&quot;order_id&quot;: &quot;O-5917&quot;, &quot;item&quot;: &quot;rice cooker&quot;, &quot;amount&quot;: 312.99, &quot;days_since_delivery&quot;: 30}, {&quot;order_id&quot;: &quot;O-5
+4. reply {&quot;message&quot;: &quot;This order is outside the refund window.&quot;} -&gt; &quot;reply sent&quot;
+5. submit {} -&gt; &quot;submitted&quot;</pre></section>
+</div>
+
+<section class="card"><h3>Try it</h3><p class="sub">It needs Python 3.10 or newer and nothing else.</p>
+<pre class="try">git clone https://github.com/priyanka-0207/eval-qc-harness
+cd eval-qc-harness
+python -m harness env
+python -m harness env --dirty --ci</pre>
+<p class="how" style="margin-top:8px"><code>--ci</code> exits 1 when the task gate fails, so a bad task set can block a
+merge. Per-step traces for every agent are written to <code>reports/env/traces</code>.</p></section>
+<footer><a href="https://github.com/priyanka-0207/eval-qc-harness">Source on GitHub</a></footer>
+</main><script>
+(function(){
+var root=document.documentElement,btn=document.getElementById('theme');
+function current(){return root.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function label(){btn.textContent=current()==='dark'?'Light theme':'Dark theme'}
+try{var saved=localStorage.getItem('evalqc-theme');if(saved)root.dataset.theme=saved}catch(e){}
+label();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',label)}catch(e){}
+btn.addEventListener('click',function(){root.dataset.theme=current()==='dark'?'light':'dark';try{localStorage.setItem('evalqc-theme',root.dataset.theme)}catch(e){}label()});
+})();
+</script></body></html>

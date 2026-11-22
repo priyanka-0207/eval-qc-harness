@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en" data-start="graders"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code graders | Eval QC Report</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{color-scheme:light;
+--page:#f3eee3;--surface:#fdfbf6;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e6e0d3;--axis:#c9c1b0;
+--border:rgba(60,45,20,.11);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
+--good:#0ca30c;--good-ink:#006300;--warn:#fab219;--warn-ink:#8a5a00;--crit:#d03b3b;--crit-ink:#b42828;
+--good-tint:rgba(12,163,12,.13);--crit-tint:rgba(208,59,59,.13);
+--top:#16171a;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0;--shadow:0 1px 2px rgba(60,45,20,.07),0 1px 1px rgba(60,45,20,.05);--top-line:transparent}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
+--border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
+--good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
+--good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}}
+:root[data-theme="dark"]{color-scheme:dark;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
+--border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
+--good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
+--good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
+--top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .29 0 0 0 0 .2 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}}
+:root[data-theme="dark"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topbar{background:var(--top);color:var(--top-ink);border-bottom:1px solid var(--top-line)}
+.topbar .inner{max-width:1120px;margin:0 auto;padding:22px 16px 0}
+.topbar .row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--top-muted)}
+.topbar h1{font-size:26px;font-weight:650;margin:2px 0 4px;letter-spacing:-.01em}
+.topbar .meta{color:var(--top-muted);font-size:14px;margin:0}
+button.theme{font:inherit;font-size:13px;background:transparent;color:var(--top-ink);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 12px;cursor:pointer}
+nav.tabs{display:flex;gap:4px;margin-top:18px;overflow-x:auto}
+nav.tabs a{color:var(--top-muted);text-decoration:none;font-size:14px;padding:10px 14px;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs a:hover{color:var(--top-ink)}
+nav.tabs a.active{color:var(--top-ink);border-bottom-color:var(--clean)}
+nav.tabs a b{color:var(--top-ink);font-weight:600;margin-right:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 16px 48px}
+.banner{background:var(--banner);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:6px;padding:10px 14px;margin-bottom:18px}
+h2{font-size:21px;font-weight:650;margin:0;letter-spacing:-.01em}
+h3{font-size:15px;font-weight:600;margin:0 0 2px}
+p{margin:0}
+.sub{color:var(--ink-2)}
+.muted{color:var(--muted)}
+.verdicts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
+@media (max-width:900px){.verdicts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.verdicts{grid-template-columns:1fr}}
+.verdict{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-top:4px solid var(--muted);border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;display:block}
+.verdict:hover{border-color:var(--axis)}
+.verdict.current{box-shadow:0 0 0 2px var(--clean)}
+.verdict.good{border-top-color:var(--good)}.verdict.warn{border-top-color:var(--warn)}.verdict.crit{border-top-color:var(--crit)}
+.verdict .q{color:var(--ink-2);font-size:13px;margin-bottom:6px}
+.verdict .big{font-size:18px;font-weight:650;line-height:1.3;margin:10px 0 0}
+.verdict .why{color:var(--ink-2);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
+.chip .ic{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
+.chip.good{color:var(--good-ink)}.chip.good .ic{background:var(--good)}
+.chip.warn{color:var(--warn-ink)}.chip.warn .ic{background:var(--warn);color:#0b0b0b}
+.chip.crit{color:var(--crit-ink)}.chip.crit .ic{background:var(--crit)}
+.chip.none{color:var(--ink-2)}.chip.none .ic{background:var(--muted)}
+.page-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.num-badge{flex:none;width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700}
+.findings{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--clean);border-radius:6px;padding:12px 16px;margin-bottom:16px}
+.findings.good{border-left-color:var(--good)}.findings.warn{border-left-color:var(--warn)}.findings.crit{border-left-color:var(--crit)}
+.findings ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
+.findings li{margin:3px 0}
+.findings strong{color:var(--ink)}
+.card{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px}
+.card-title{margin-bottom:8px}
+.how{color:var(--muted);font-size:13px;margin-top:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-bottom:16px}
+.grid2>.card{margin-bottom:0}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.tile .label{color:var(--ink-2);font-size:14px}
+.tile .value{font-size:25px;font-weight:650;margin-top:2px}
+.tile .note{color:var(--muted);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;padding:0;list-style:none;color:var(--ink-2);font-size:14px}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.chart{overflow-x:auto}
+.chart svg{width:100%;min-width:540px;height:auto;display:block}
+.chart text{fill:var(--ink-2);font-size:12px}
+.chart text.ink{fill:var(--ink)}
+.chart text.strong{fill:var(--ink);font-weight:600}
+.chart .tick{fill:var(--muted);font-variant-numeric:tabular-nums}
+details.tv{margin-top:8px}
+details.tv summary{cursor:pointer;color:var(--ink-2);font-size:13px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:4px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{color:var(--ink-2);font-weight:600;font-size:13px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:600}
+.pos{color:var(--good-ink);font-weight:600}.neg{color:var(--crit-ink);font-weight:600}
+ul.checks{list-style:none;margin:8px 0 0;padding:0}
+ul.checks li{display:grid;grid-template-columns:22px 1fr;gap:4px;padding:7px 0;border-top:1px solid var(--grid)}
+ul.checks li:first-child{border-top:0}
+.icon{font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;margin-top:2px}
+.icon.ok{background:var(--good)}.icon.bad{background:var(--crit)}
+.detail{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.split-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+table.matrix{min-width:860px}
+table.matrix th.col{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;white-space:nowrap;padding:8px 4px;height:150px;vertical-align:bottom}
+table.matrix th.grp{text-align:center;color:var(--muted);font-weight:600;border-bottom:1px solid var(--grid)}
+table.matrix td.cell{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;padding:8px 4px;border-left:2px solid var(--surface)}
+td.cell.ok{background:var(--good-tint)}td.cell.bad{background:var(--crit-tint);font-weight:600}td.cell.na{color:var(--muted)}
+td.cell .mk{font-size:11px;margin-right:3px}
+td.cell.ok .mk{color:var(--good-ink)}td.cell.bad .mk{color:var(--crit-ink)}
+.notes{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;font-size:14px;max-width:440px}
+.cm div{padding:10px;border-radius:6px;text-align:center}
+.cm .h{color:var(--ink-2);font-weight:600;font-size:13px;padding:6px}
+.cm .agree{background:var(--good-tint)}.cm .disagree{background:var(--crit-tint)}
+.cm .n{font-size:22px;font-weight:650;display:block}
+.empty{border:1px dashed var(--axis);border-radius:8px;padding:18px;color:var(--ink-2);background:var(--surface)}
+code{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12px;background:var(--page);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+a.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px}
+a.btn:hover{border-color:var(--axis)}
+details.terms{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-top:24px}
+details.terms summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
+dl.glossary{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:6px 16px;margin:12px 0 4px;font-size:14px}
+dl.glossary dt{font-weight:600}dl.glossary dd{margin:0;color:var(--ink-2)}
+#tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:none;z-index:10;max-width:280px}
+[data-tip]:focus{outline:2px solid var(--clean);outline-offset:2px}
+.sitebar{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sitebar a{color:var(--top-muted);text-decoration:none}.sitebar a:hover,.sitebar a.on{color:var(--top-ink)}
+footer{color:var(--muted);font-size:13px;margin-top:20px;border-top:1px solid var(--grid);padding-top:14px}
+
+details.more{margin:4px 0 16px}
+details.more>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+";font-weight:700}
+details.more[open]>summary::before{content:"\2212"}
+details.more>summary:hover{color:var(--ink);border-color:var(--axis)}
+.more-body{margin-top:14px}
+.cnt{font-variant-numeric:tabular-nums;margin-left:4px;color:var(--ink-2)}
+td .icon{vertical-align:middle;margin-top:0}
+@media print{.topbar{background:#fff;color:#000}nav.tabs,button.theme,.pager{display:none}.page[hidden]{display:block!important}.card,.verdict,.tile{break-inside:avoid}}
+</style></head>
+<body>
+<header class="topbar"><div class="inner"><nav class="sitebar"><a href="../../">Overview</a><a href="../../real/" class="on">Real CFPB run</a><a href="../../synthetic/">Synthetic run</a></nav><div class="row"><div>
+<div class="eyebrow">Eval QC harness</div><h1>Can this agent's score be trusted?</h1>
+<p class="meta">Complaint-routing agent &middot; 200 test complaints &middot; generated Nov 20, 2026, 4:53 PM</p></div>
+<button class="theme" id="theme" type="button">Dark theme</button></div>
+<nav class="tabs" role="tablist"><a href="../data/" data-tab="data" role="tab"><b>1</b>Test data</a><a href="../agent/" data-tab="agent" role="tab"><b>2</b>Agent</a><a href="../graders/" data-tab="graders" role="tab"><b>3</b>Code graders</a><a href="../judge/" data-tab="judge" role="tab"><b>4</b>LLM judge</a></nav>
+</div></header>
+<main class="wrap">
+
+<div class="verdicts"><a class="verdict good" href="../data/" data-page="data"><div class="q">Can we trust the test data?</div><span class="chip good"><span class="ic">&#10003;</span>Trusted</span><div class="big">Yes, the clean split</div></a><a class="verdict warn" href="../agent/" data-page="agent"><div class="q">How good is the agent?</div><span class="chip warn"><span class="ic">!</span>Regressions found</span><div class="big">71.5% of products right</div></a><a class="verdict crit" href="../graders/" data-page="graders"><div class="q">Can the code graders be cheated?</div><span class="chip crit"><span class="ic">&#10005;</span>New blind spot</span><div class="big">2 new blind spots</div></a><a class="verdict crit" href="../judge/" data-page="judge"><div class="q">Can we trust the LLM judge?</div><span class="chip crit"><span class="ic">&#10005;</span>Not trusted alone</span><div class="big">Missed 10 of 20 wrong answers</div></a></div>
+<section class="page" id="page-graders" data-page="graders"><div class="page-head"><span class="num-badge">3</span><div><h2>Can the code graders be cheated?</h2><p class="sub">Each scorer gets right answers, planted mistakes and cheats.</p></div></div><div class="findings crit"><strong>Key findings</strong><ul><li><strong>2</strong> new blind spots.</li><li>3 known gaps, noted under the table.</li></ul></div><div class="card"><div class="card-title"><h3>Grader test results</h3><p class="how">A cross means the scorer was fooled at least once.</p></div><div class="table-wrap"><table><thead><tr><th class="">Scorer</th><th class="">Accepts correct answers</th><th class="">Catches planted mistakes</th><th class="">Catches cheating answers</th></tr></thead><tbody><tr><td class=""><strong>Product match</strong></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td></tr><tr><td class=""><strong>Escalation match</strong></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td></tr><tr><td class=""><strong>Guardrail</strong></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon bad">&#10005;</span> <span class="cnt">0%</span></td></tr><tr><td class=""><strong>Quote check, strict</strong></td><td class=""><span class="icon bad">&#10005;</span> <span class="cnt">94%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td></tr><tr><td class=""><strong>Quote check, plain</strong></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon ok">&#10003;</span> <span class="cnt">100%</span></td><td class=""><span class="icon bad">&#10005;</span> <span class="cnt">26%</span></td></tr></tbody></table></div><ul class="notes"><li>Guardrail: The guardrail only checks required escalations. The over-escalation rate on the Agent page covers the rest.</li><li>Quote check, plain: The plain quote check is kept only to show why the strict one exists.</li></ul></div><details class="more"><summary>Show details</summary><div class="more-body"><div class="card"><div class="card-title"><h3>Every test, every scorer</h3><p class="how">Hover a cell for counts.</p></div><div class="table-wrap"><table class="matrix"><thead><tr><th></th><th class="grp" colspan="1">Correct</th><th class="grp" colspan="4">Planted mistakes</th><th class="grp" colspan="6">Shortcuts</th></tr><tr><th>Scorer</th><th class="col">Correct answer</th><th class="col">Wrong product</th><th class="col">Flipped escalation</th><th class="col">One word changed</th><th class="col">Another complaint&#x27;s quote</th><th class="col">Whole complaint</th><th class="col">One-word quote</th><th class="col">Redaction marks</th><th class="col">Empty quote</th><th class="col">Always escalate</th><th class="col">Most common product</th></tr></thead><tbody><tr><td><strong>Product match</strong></td><td class="cell ok" tabindex="0" data-tip="Product match, Correct answer: accepted 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Product match, Wrong product: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Product match, Most common product: caught 160 of 160"><span class="mk">&#10003;</span>100%</td></tr><tr><td><strong>Escalation match</strong></td><td class="cell ok" tabindex="0" data-tip="Escalation match, Correct answer: accepted 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Escalation match, Flipped escalation: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Escalation match, Always escalate: caught 146 of 146"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td></tr><tr><td><strong>Guardrail</strong></td><td class="cell ok" tabindex="0" data-tip="Guardrail, Correct answer: accepted 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Guardrail, Flipped escalation: caught 54 of 54"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell bad" tabindex="0" data-tip="Guardrail, Always escalate: caught 0 of 146. The guardrail only checks required escalations. The over-escalation rate on the Agent page covers the rest."><span class="mk">&#10005;</span>0%</td><td class="cell na" title="Not applicable">&middot;</td></tr><tr><td><strong>Quote check, strict</strong></td><td class="cell bad" tabindex="0" data-tip="Quote check, strict, Correct answer: accepted 189 of 200"><span class="mk">&#10005;</span>94%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, One word changed: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, Another complaint&#x27;s quote: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, Whole complaint: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, One-word quote: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, Redaction marks: caught 166 of 166"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, strict, Empty quote: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td></tr><tr><td><strong>Quote check, plain</strong></td><td class="cell ok" tabindex="0" data-tip="Quote check, plain, Correct answer: accepted 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell ok" tabindex="0" data-tip="Quote check, plain, One word changed: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell ok" tabindex="0" data-tip="Quote check, plain, Another complaint&#x27;s quote: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell bad" tabindex="0" data-tip="Quote check, plain, Whole complaint: caught 0 of 200. The plain quote check is kept only to show why the strict one exists."><span class="mk">&#10005;</span>0%</td><td class="cell bad" tabindex="0" data-tip="Quote check, plain, One-word quote: caught 0 of 200. The plain quote check is kept only to show why the strict one exists."><span class="mk">&#10005;</span>0%</td><td class="cell bad" tabindex="0" data-tip="Quote check, plain, Redaction marks: caught 0 of 166"><span class="mk">&#10005;</span>0%</td><td class="cell ok" tabindex="0" data-tip="Quote check, plain, Empty quote: caught 200 of 200"><span class="mk">&#10003;</span>100%</td><td class="cell na" title="Not applicable">&middot;</td><td class="cell na" title="Not applicable">&middot;</td></tr></tbody></table></div></div></div></details><div class="pager"><a class="btn" href="../agent/">&larr; Agent</a><a class="btn" href="../judge/">LLM judge &rarr;</a></div></section>
+
+<details class="terms"><summary>Terms used in this report</summary><dl class="glossary">
+<dt>Clean split</dt><dd>Older complaints form the retrieval corpus and newer ones form the test set, with duplicates and near copies removed.</dd>
+<dt>Naive split</dt><dd>A random split of the raw rows. Test complaints can also sit in the corpus, so the agent can copy answers.</dd>
+<dt>Leakage</dt><dd>When test cases, or near copies of them, are also in the data the agent searches. It makes scores look better than they are.</dd>
+<dt>Planted mistake</dt><dd>A correct answer changed in one place, like a wrong product or one swapped word, to see if the grader notices.</dd>
+<dt>Shortcut</dt><dd>A cheating answer, like quoting the whole complaint or escalating everything, that a weak grader would pass.</dd>
+<dt>Regression</dt><dd>A case the old version got right and the new version gets wrong.</dd>
+<dt>Kappa</dt><dd>Agreement between two graders after removing agreement expected by chance. 0 means no better than chance, 1 means perfect.</dd>
+</dl></details>
+</main><div id="tip" role="tooltip"></div><script>
+(function(){
+var root=document.documentElement,btn=document.getElementById('theme');
+function current(){return root.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function label(){btn.textContent=current()==='dark'?'Light theme':'Dark theme'}
+try{var saved=localStorage.getItem('evalqc-theme');if(saved)root.dataset.theme=saved}catch(e){}
+label();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',label)}catch(e){}
+btn.addEventListener('click',function(){root.dataset.theme=current()==='dark'?'light':'dark';try{localStorage.setItem('evalqc-theme',root.dataset.theme)}catch(e){}label()});
+var tip=document.getElementById('tip');
+function show(el,x,y){tip.textContent=el.getAttribute('data-tip');tip.style.display='block';
+var w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(x+12,innerWidth-w-8))+'px';tip.style.top=Math.max(8,y-h-10)+'px'}
+document.querySelectorAll('[data-tip]').forEach(function(el){
+el.addEventListener('mousemove',function(e){show(el,e.clientX,e.clientY)});
+el.addEventListener('mouseleave',function(){tip.style.display='none'});
+el.addEventListener('focus',function(){var r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top)});
+el.addEventListener('blur',function(){tip.style.display='none'});});
+var pages=['data','agent','graders','judge'];
+function show(h){if(pages.indexOf(h)<0)h='data';
+document.querySelectorAll('.page').forEach(function(p){p.hidden=p.dataset.page!==h});
+document.querySelectorAll('[data-tab]').forEach(function(a){var on=a.dataset.tab===h;a.classList.toggle('active',on);a.setAttribute('aria-selected',on)});
+document.querySelectorAll('.verdict').forEach(function(v){v.classList.toggle('current',v.dataset.page===h)});}
+if(root.dataset.start){show(root.dataset.start)}else{
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-go]');if(!a)return;
+e.preventDefault();show(a.dataset.go);window.scrollTo(0,0)});
+show('data');}
+})();
+</script></body></html>

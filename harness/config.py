@@ -41,6 +41,10 @@ SEED = 7
 ESCALATE_TAGS = ("Servicemember", "Older American")
 FRAUD_LABEL_TERMS = ("fraud", "scam", "identity theft", "information belongs to someone else")
 
+REPO_URL = "https://github.com/priyanka-0207/eval-qc-harness"
+SITE_URL = "https://priyanka-0207.github.io/eval-qc-harness/"
+DEMO_VIDEO_URL = ""
+
 JUDGE_MODEL = "gpt-4o-mini"
 JUDGE_KEY_NAME = "EVAL_QC_OPENAI_API_KEY"
 JUDGE_SCORE_CASES = 50

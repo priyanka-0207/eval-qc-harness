@@ -118,6 +118,22 @@ def test_demo_run_end_to_end(tmp_path):
     assert result["report"].exists()
 
 
+def test_headline_finds_leaks_and_renders_overview(tmp_path):
+    from harness import config, demo, landing, store
+    try:
+        demo.run(tmp_path)
+    finally:
+        config.use_root(config.ROOT)
+    head = store.read_json(tmp_path / "reports" / "results.json")["headline"]
+    assert head["dataset"] == "synthetic"
+    assert head["blocked_rows"] == sum(head["blocked_by_step"].values()) > 0
+    assert head["naive_leaked_cases"] > 0 and head["gate_naive"] == "FAIL" and head["gate_clean"] == "PASS"
+    ex = head["example"]
+    assert ex["eval_id"] != ex["corpus_id"] and ex["jaccard"] >= config.QC_NEAR_DUP_JACCARD
+    html = landing.render(head, has_real=False, has_synthetic=True)
+    assert "A QC gate for eval datasets" in html and "Synthetic data." in html and 'href="real/"' not in html
+
+
 class FakeClient:
     def __init__(self, ungrounded=False):
         self.calls = 0

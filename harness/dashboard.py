@@ -46,44 +46,48 @@ JUDGE_PROBES = [
 ]
 SCORE_MEANING = {0: "Wrong product", 1: "Doubtful, or quote does not support it", 2: "Fits, quote is weak", 3: "Clearly fits"}
 
-CSS = """
+CSS = r"""
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 :root{color-scheme:light;
---page:#eceae5;--surface:#fdfdfc;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
---border:rgba(11,11,11,.09);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
+--page:#f3eee3;--surface:#fdfbf6;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e6e0d3;--axis:#c9c1b0;
+--border:rgba(60,45,20,.11);--clean:#2a78d6;--naive:#eb6834;--v2:#1baf7a;--judge:#6250d6;
 --good:#0ca30c;--good-ink:#006300;--warn:#fab219;--warn-ink:#8a5a00;--crit:#d03b3b;--crit-ink:#b42828;
 --good-tint:rgba(12,163,12,.13);--crit-tint:rgba(208,59,59,.13);
---top:#16171a;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0;--shadow:0 1px 2px rgba(20,20,15,.06),0 1px 1px rgba(20,20,15,.04);--top-line:transparent}
+--top:#16171a;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#fff6e0;--shadow:0 1px 2px rgba(60,45,20,.07),0 1px 1px rgba(60,45,20,.05);--top-line:transparent}
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;
---page:#121211;--surface:#1c1c1b;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
 --border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
 --good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
 --good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
 --top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}}
 :root[data-theme="dark"]{color-scheme:dark;
---page:#121211;--surface:#1c1c1b;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+--page:#0b0b0c;--surface:#161617;--ink:#f0efec;--ink-2:#c3c2b7;--muted:#898781;--grid:#262628;--axis:#38383a;
 --border:rgba(255,255,255,.10);--clean:#3987e5;--naive:#d95926;--v2:#199e70;--judge:#9085e9;
 --good:#0ca30c;--good-ink:#0ca30c;--warn:#fab219;--warn-ink:#fab219;--crit:#d03b3b;--crit-ink:#e66767;
 --good-tint:rgba(12,163,12,.20);--crit-tint:rgba(208,59,59,.22);
 --top:#070707;--top-ink:#f0efec;--top-muted:#a9a8a1;--banner:#2a2416;--shadow:none;--top-line:rgba(255,255,255,.09)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--page);color:var(--ink);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.6 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .29 0 0 0 0 .2 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}}
+:root[data-theme="dark"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .86 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .topbar{background:var(--top);color:var(--top-ink);border-bottom:1px solid var(--top-line)}
 .topbar .inner{max-width:1120px;margin:0 auto;padding:22px 16px 0}
 .topbar .row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--top-muted)}
-.topbar h1{font-size:24px;font-weight:650;margin:2px 0 4px;letter-spacing:-.01em}
-.topbar .meta{color:var(--top-muted);font-size:13px;margin:0}
+.topbar h1{font-size:26px;font-weight:650;margin:2px 0 4px;letter-spacing:-.01em}
+.topbar .meta{color:var(--top-muted);font-size:14px;margin:0}
 button.theme{font:inherit;font-size:13px;background:transparent;color:var(--top-ink);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 12px;cursor:pointer}
 nav.tabs{display:flex;gap:4px;margin-top:18px;overflow-x:auto}
-nav.tabs a{color:var(--top-muted);text-decoration:none;font-size:13px;padding:10px 14px;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs a{color:var(--top-muted);text-decoration:none;font-size:14px;padding:10px 14px;border-bottom:2px solid transparent;white-space:nowrap}
 nav.tabs a:hover{color:var(--top-ink)}
 nav.tabs a.active{color:var(--top-ink);border-bottom-color:var(--clean)}
 nav.tabs a b{color:var(--top-ink);font-weight:600;margin-right:6px}
 .wrap{max-width:1120px;margin:0 auto;padding:22px 16px 48px}
 .banner{background:var(--banner);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:6px;padding:10px 14px;margin-bottom:18px}
-h2{font-size:20px;font-weight:650;margin:0;letter-spacing:-.01em}
-h3{font-size:14px;font-weight:600;margin:0 0 2px}
+h2{font-size:21px;font-weight:650;margin:0;letter-spacing:-.01em}
+h3{font-size:15px;font-weight:600;margin:0 0 2px}
 p{margin:0}
 .sub{color:var(--ink-2)}
 .muted{color:var(--muted)}
@@ -94,9 +98,9 @@ p{margin:0}
 .verdict:hover{border-color:var(--axis)}
 .verdict.current{box-shadow:0 0 0 2px var(--clean)}
 .verdict.good{border-top-color:var(--good)}.verdict.warn{border-top-color:var(--warn)}.verdict.crit{border-top-color:var(--crit)}
-.verdict .q{color:var(--ink-2);font-size:12px;margin-bottom:6px}
-.verdict .big{font-size:17px;font-weight:650;line-height:1.3;margin:10px 0 0}
-.verdict .why{color:var(--ink-2);font-size:12px}
+.verdict .q{color:var(--ink-2);font-size:13px;margin-bottom:6px}
+.verdict .big{font-size:18px;font-weight:650;line-height:1.3;margin:10px 0 0}
+.verdict .why{color:var(--ink-2);font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
 .chip .ic{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700}
 .chip.good{color:var(--good-ink)}.chip.good .ic{background:var(--good)}
@@ -112,16 +116,16 @@ p{margin:0}
 .findings strong{color:var(--ink)}
 .card{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px}
 .card-title{margin-bottom:8px}
-.how{color:var(--muted);font-size:12px;margin-top:2px}
+.how{color:var(--muted);font-size:13px;margin-top:2px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-bottom:16px}
 .grid2>.card{margin-bottom:0}
 .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
 @media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tile{background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
-.tile .label{color:var(--ink-2);font-size:13px}
-.tile .value{font-size:24px;font-weight:650;margin-top:2px}
-.tile .note{color:var(--muted);font-size:12px}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;padding:0;list-style:none;color:var(--ink-2);font-size:13px}
+.tile .label{color:var(--ink-2);font-size:14px}
+.tile .value{font-size:25px;font-weight:650;margin-top:2px}
+.tile .note{color:var(--muted);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;padding:0;list-style:none;color:var(--ink-2);font-size:14px}
 .legend li{display:flex;align-items:center;gap:6px}
 .sw{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
 .chart{overflow-x:auto}
@@ -131,11 +135,11 @@ p{margin:0}
 .chart text.strong{fill:var(--ink);font-weight:600}
 .chart .tick{fill:var(--muted);font-variant-numeric:tabular-nums}
 details.tv{margin-top:8px}
-details.tv summary{cursor:pointer;color:var(--ink-2);font-size:12px}
+details.tv summary{cursor:pointer;color:var(--ink-2);font-size:13px}
 .table-wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:13px;margin-top:4px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:4px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
-th{color:var(--ink-2);font-weight:600;font-size:12px}
+th{color:var(--ink-2);font-weight:600;font-size:13px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tr.total td{font-weight:600}
 .pos{color:var(--good-ink);font-weight:600}.neg{color:var(--crit-ink);font-weight:600}
@@ -144,7 +148,7 @@ ul.checks li{display:grid;grid-template-columns:22px 1fr;gap:4px;padding:7px 0;b
 ul.checks li:first-child{border-top:0}
 .icon{font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;margin-top:2px}
 .icon.ok{background:var(--good)}.icon.bad{background:var(--crit)}
-.detail{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.detail{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
 .split-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
 table.matrix{min-width:860px}
 table.matrix th.col{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;white-space:nowrap;padding:8px 4px;height:150px;vertical-align:bottom}
@@ -153,27 +157,29 @@ table.matrix td.cell{text-align:center;font-variant-numeric:tabular-nums;white-s
 td.cell.ok{background:var(--good-tint)}td.cell.bad{background:var(--crit-tint);font-weight:600}td.cell.na{color:var(--muted)}
 td.cell .mk{font-size:11px;margin-right:3px}
 td.cell.ok .mk{color:var(--good-ink)}td.cell.bad .mk{color:var(--crit-ink)}
-.notes{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:13px}
-.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;font-size:13px;max-width:440px}
+.notes{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;font-size:14px;max-width:440px}
 .cm div{padding:10px;border-radius:6px;text-align:center}
-.cm .h{color:var(--ink-2);font-weight:600;font-size:12px;padding:6px}
+.cm .h{color:var(--ink-2);font-weight:600;font-size:13px;padding:6px}
 .cm .agree{background:var(--good-tint)}.cm .disagree{background:var(--crit-tint)}
 .cm .n{font-size:22px;font-weight:650;display:block}
 .empty{border:1px dashed var(--axis);border-radius:8px;padding:18px;color:var(--ink-2);background:var(--surface)}
-code{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(--page);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+code{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12px;background:var(--page);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
 .pager{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
-a.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px}
+a.btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px}
 a.btn:hover{border-color:var(--axis)}
 details.terms{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-top:24px}
-details.terms summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--ink-2)}
-dl.glossary{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:6px 16px;margin:12px 0 4px;font-size:13px}
+details.terms summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
+dl.glossary{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:6px 16px;margin:12px 0 4px;font-size:14px}
 dl.glossary dt{font-weight:600}dl.glossary dd{margin:0;color:var(--ink-2)}
-#tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:none;z-index:10;max-width:280px}
+#tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:none;z-index:10;max-width:280px}
 [data-tip]:focus{outline:2px solid var(--clean);outline-offset:2px}
-footer{color:var(--muted);font-size:12px;margin-top:20px;border-top:1px solid var(--grid);padding-top:14px}
+.sitebar{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sitebar a{color:var(--top-muted);text-decoration:none}.sitebar a:hover,.sitebar a.on{color:var(--top-ink)}
+footer{color:var(--muted);font-size:13px;margin-top:20px;border-top:1px solid var(--grid);padding-top:14px}
 
 details.more{margin:4px 0 16px}
-details.more>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;list-style:none}
+details.more>summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;list-style:none}
 details.more>summary::-webkit-details-marker{display:none}
 details.more>summary::before{content:"+";font-weight:700}
 details.more[open]>summary::before{content:"\2212"}
@@ -202,11 +208,14 @@ el.addEventListener('mouseleave',function(){tip.style.display='none'});
 el.addEventListener('focus',function(){var r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top)});
 el.addEventListener('blur',function(){tip.style.display='none'});});
 var pages=['data','agent','graders','judge'];
-function route(){var h=root.dataset.start||(location.hash||'#data').slice(1);if(pages.indexOf(h)<0)h='data';
+function show(h){if(pages.indexOf(h)<0)h='data';
 document.querySelectorAll('.page').forEach(function(p){p.hidden=p.dataset.page!==h});
 document.querySelectorAll('[data-tab]').forEach(function(a){var on=a.dataset.tab===h;a.classList.toggle('active',on);a.setAttribute('aria-selected',on)});
 document.querySelectorAll('.verdict').forEach(function(v){v.classList.toggle('current',v.dataset.page===h)});}
-window.addEventListener('hashchange',function(){route();window.scrollTo(0,0)});route();
+if(root.dataset.start){show(root.dataset.start)}else{
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-go]');if(!a)return;
+e.preventDefault();show(a.dataset.go);window.scrollTo(0,0)});
+show('data');}
 })();
 """
 
@@ -439,7 +448,7 @@ def _page_head(num, title, sub):
 
 
 def _hash_href(key):
-    return f"#{key}"
+    return f'#" data-go="{key}'
 
 
 def _pager(idx, href=_hash_href):
@@ -497,19 +506,23 @@ def _data_page(results, state, t_clean, t_naive, lo):
     qc, splits, manifest = results["qc"], results["splits"], results["silver_manifest"]
     steps = manifest["steps"]
     eval_rows = (results.get("eval_rows") or {}).get("time", [])
-    infl = (t_naive["v1_nearest"]["product_match"]["rate"] - t_clean["v1_nearest"]["product_match"]["rate"]) * 100
     fails = sum(1 for c in qc["naive"]["checks"] if c["status"] == "FAIL")
+    head = results.get("headline") or {}
+    leaked, rest = head.get("naive_v1_on_leaked"), head.get("naive_v1_on_clean")
     items = [
-        f'<strong>{_num(steps[-1]["rows"])} of {_num(steps[0]["rows"])}</strong> rows survived cleaning, and '
-        f'{splits["time"].get("eval_pool_near_duplicates_removed", 0)} near copies were removed from the test set.',
-        f'The naive split failed <strong>{fails} of {len(qc["naive"]["checks"])}</strong> checks, so the gate would block it.',
-        f'Leakage made the agent look <strong>{infl:+.1f} points</strong> better than it is.',
+        f'<strong>{_num(steps[-1]["rows"])} of {_num(steps[0]["rows"])}</strong> rows kept after cleaning.',
+        f'The random split fails <strong>{fails} of {len(qc["naive"]["checks"])}</strong> checks.',
     ]
-    leak = _card("What leakage does to the score",
-                 "Same agent (v1), same data, two ways of splitting it.",
-                 _legend([("--clean", "Clean split"), ("--naive", "Naive split")])
-                 + f'<div class="chart">{_dumbbell(t_clean["v1_nearest"], t_naive["v1_nearest"], lo)}</div>')
-    gate = _card("QC gate", "Every check must pass before a score counts.", _gate_compare(qc))
+    if leaked and rest:
+        items.append(f'Leaked cases: <strong>{leaked["passed"]} of {leaked["n"]}</strong> right. Other cases: {_pct(rest["rate"], 0)}.')
+        leak = _card("What leakage does to the score",
+                     "Random split, agent v1.",
+                     _table(["Test cases", "Cases", "Product right"],
+                            [["Leaked", _num(leaked["n"]), _pct(leaked["rate"])],
+                             ["Not leaked", _num(rest["n"]), _pct(rest["rate"])]], (1, 2)))
+    else:
+        leak = ""
+    gate = _card("QC gate", "", _gate_compare(qc))
 
     lineage_rows = [[_e(_short_step(s["step"])), _num(s["dropped"]) if s["dropped"] else "-", _num(s["rows"])] for s in steps]
     extra = _card("Cleaning steps", f'Raw rows minus every removal equals rows kept: {"reconciled" if manifest["reconciled"] else "not reconciled"}.',
@@ -519,56 +532,33 @@ def _data_page(results, state, t_clean, t_naive, lo):
         prod = Counter(_short_product(r["product"]) for r in eval_rows).most_common()
         extra += _card("Test set by product", f"{total} test complaints.",
                        _table(["Product", "Cases", "Share"], [[_e(k), _num(v), _pct(v / total, 0)] for k, v in prod], (1, 2)))
+    extra += _card("Clean split vs naive split",
+                   "Same agent (v1), same data, two ways of splitting it. The two splits test different complaints, "
+                   "so this gap mixes leakage with how hard each test set is.",
+                   _legend([("--clean", "Clean split"), ("--naive", "Naive split")])
+                   + f'<div class="chart">{_dumbbell(t_clean["v1_nearest"], t_naive["v1_nearest"], lo)}</div>')
     leak_tv = [[_e(f'{a.split("_")[0]}: {label}'), _pct(t_clean[a][m]["rate"]), _pct(t_naive[a][m]["rate"]),
                 _delta(t_clean[a][m]["rate"], t_naive[a][m]["rate"])]
                for a in ("v1_nearest", "v2_vote") for m, label in METRICS]
-    extra += _card("Leakage for both agents", "", _table(["Metric", "Clean", "Naive", "Inflation (pts)"], leak_tv, (1, 2, 3)))
+    extra += _card("Leakage for both agents", "", _table(["Metric", "Clean", "Naive", "Naive minus clean (pts)"], leak_tv, (1, 2, 3)))
     extra += _card("Check details", "", f'<div class="grid2" style="margin:0">'
                    f'{_gate_card("Clean split", "", qc["time"])}{_gate_card("Naive split", "", qc["naive"])}</div>')
-    return (_page_head(1, "Can we trust the test data?", "The test set must be clean, leak-free and newer than the corpus.")
+    return (_page_head(1, "Can we trust the test data?", "")
             + _findings(state, items) + leak + gate + _details(extra))
 
 
 def _agent_page(results, state, t_clean):
-    runs, reg = results["runs"], results["regression"]
-    eval_rows = (results.get("eval_rows") or {}).get("time", [])
+    reg = results["regression"]
     v1, v2 = t_clean["v1_nearest"], t_clean["v2_vote"]
     score_rows = [[_e(label), _pct(v1[m]["rate"]), _pct(v2[m]["rate"]), _delta(v1[m]["rate"], v2[m]["rate"])] for m, label in METRICS]
     score_rows.append(['Escalated when not needed <span class="muted">(lower is better)</span>',
                        _pct(v1["over_escalation"]["rate"]), _pct(v2["over_escalation"]["rate"]),
                        _delta(v2["over_escalation"]["rate"], v1["over_escalation"]["rate"])])
-    scores = _card("v1 vs v2", f'{v2["product_match"]["n"]} test complaints. Change is in percentage points.',
-                   _table(["Metric", "v1 (old)", "v2 (new)", "Change"], score_rows, (1, 2, 3)))
+    fixed = reg["product_match"]["fixed"] + reg["action_match"]["fixed"]
     broken = reg["product_match"]["broken"] + reg["action_match"]["broken"]
-    items = [
-        f'v2 gets <strong>{_pct(v2["product_match"]["rate"])}</strong> of products right, up from {_pct(v1["product_match"]["rate"])}.',
-        f'It fixed {reg["product_match"]["fixed"] + reg["action_match"]["fixed"]} mistakes and broke <strong>{broken}</strong> cases v1 had right.',
-        f'It made {_pct(v2["guardrail"]["rate"], 0)} of required escalations without escalating everything.',
-    ]
-    extra = _card("What v2 fixed and broke", "", _table(["Metric", "Fixed", "Broken"],
-                  [[_e(label), _num(reg[m]["fixed"]), _num(reg[m]["broken"])] for m, label in METRICS], (1, 2)))
-    if eval_rows:
-        by_id = {r["complaint_id"]: r["product"] for r in eval_rows}
-        stats = defaultdict(lambda: [0, 0])
-        for p in runs[("time", "v2_vote")]["per_case"]:
-            prod = by_id.get(p["complaint_id"])
-            if prod:
-                stats[prod][1] += 1
-                stats[prod][0] += bool(p["product_match"])
-        prod_rows = sorted(((k, v[0] / v[1], v[0], v[1]) for k, v in stats.items() if v[1]), key=lambda r: r[1])
-        if prod_rows:
-            w = prod_rows[0]
-            items.append(f'Weakest product: <strong>{_e(_short_product(w[0]))}</strong>, {w[2]} of {w[3]} right.')
-            extra += _card("v2 accuracy by product", "Weakest first.",
-                           f'<div class="chart">{_hbars([(_short_product(p), r, f"{_short_product(p)}: {c} of {n} right") for p, r, c, n in prod_rows], "--v2", label_w=220)}</div>')
-        pairs = Counter((_short_product(by_id[o["complaint_id"]]), _short_product(o["product"] or "none"))
-                        for o in runs[("time", "v2_vote")]["outputs"]
-                        if o["complaint_id"] in by_id and o["product"] != by_id[o["complaint_id"]]).most_common(5)
-        if pairs:
-            extra += _card("Products v2 mixes up", "", _table(["Real product", "v2 said", "Cases"],
-                                                             [[_e(a), _e(b), _num(n)] for (a, b), n in pairs], (2,)))
-    return (_page_head(2, "How good is the agent?", "Scored on the clean split. v1 is the old version, v2 the new one.")
-            + _findings(state, items) + scores + _details(extra))
+    scores = _card("v1 vs v2", f'v2 fixed {fixed} cases and broke <strong>{broken}</strong>.',
+                   _table(["Metric", "v1 (old)", "v2 (new)", "Change"], score_rows, (1, 2, 3)))
+    return _page_head(2, "How good is the agent?", "v1 is the old version, v2 the new one.") + scores
 
 
 def _graders_page(results, state):
@@ -576,44 +566,40 @@ def _graders_page(results, state):
     blind = [r for r in table if not r["good"]]
     unexpected = [r for r in blind if (r["scorer"], r["probe"]) not in KNOWN_BLIND_SPOTS]
     items = [
-        "Each scorer was given correct answers, planted mistakes and cheating answers.",
-        f"<strong>{len(unexpected)}</strong> unexpected blind spots." if unexpected
-        else "The scorers behind the agent's score caught every mistake and cheating answer.",
-        f"{len(blind) - len(unexpected)} known gaps, explained below the table.",
+        f"<strong>{len(unexpected)}</strong> new blind spots." if unexpected else "No new blind spots.",
+        f"{len(blind) - len(unexpected)} known gaps, noted under the table.",
     ]
     notes = sorted({f'{SCORER_LABELS.get(r["scorer"])}: {KNOWN_BLIND_SPOTS[(r["scorer"], r["probe"])]}' for r in blind
                     if (r["scorer"], r["probe"]) in KNOWN_BLIND_SPOTS})
     summary = _card("Grader test results", "A cross means the scorer was fooled at least once.",
                     _grader_summary(table) + (f'<ul class="notes">{"".join(f"<li>{_e(n)}</li>" for n in notes)}</ul>' if notes else ""))
     extra = _card("Every test, every scorer", "Hover a cell for counts.", _grader_matrix(table))
-    return (_page_head(3, "Can the code graders be cheated?", "A score is only as good as the grader that produced it.")
+    return (_page_head(3, "Can the code graders be cheated?", "Each scorer gets right answers, planted mistakes and cheats.")
             + _findings(state, items) + summary + _details(extra))
 
 
 def _judge_page(judge, state):
-    head = _page_head(4, "Can we trust the LLM judge?", "gpt-4o-mini rates each answer 0 to 3 and must quote the complaint as evidence.")
+    head = _page_head(4, "Can we trust the LLM judge?", "gpt-4o-mini scores each answer 0 to 3.")
     if judge.get("status") != "ran":
-        return head + (f'<div class="empty"><strong>The LLM judge has not run.</strong> {_e(judge.get("message", ""))}'
-                       f'<br><span class="muted">Then run <code>python -m harness all --judge</code>.</span></div>')
+        return head + '<div class="empty">Not run yet. Add <code>--judge</code> to the run command.</div>'
     probes = {p["probe"]: p for p in judge["probes"]}
     wrong = probes.get("planted: wrong product", {"good": 0, "n": 0})
     cons = judge["consistency"]
     pers = judge.get("persuasion", {"flips": 0, "chances": 0})
     items = [
-        f'It passed <strong>{wrong["n"] - wrong["good"]} of {wrong["n"]}</strong> answers with a deliberately wrong product.',
-        f'It gave every agent answer the top score, so it is not telling good answers from weak ones.',
-        f'It was consistent ({_pct(cons["rate"], 0)} same score on repeat runs) and rarely swayed by persuasion ({pers["flips"]} of {pers["chances"]}).',
+        f'Passed <strong>{wrong["n"] - wrong["good"]} of {wrong["n"]}</strong> wrong answers.',
+        'Gave every agent answer the top score.',
     ]
     if judge.get("score_distribution", {}).get("3", 0) != judge.get("scored_cases"):
-        items[1] = f'Its scores spread across the scale on {judge["scored_cases"]} agent answers.'
-    items.append("Use it as a second opinion next to the code checks, not as the only grader." if state == "crit" else "It held up on these tests.")
+        items[1] = 'Its scores spread across the scale.'
+    items.append("Use it with the code checks, not alone." if state == "crit" else "It held up on these tests.")
     bars = []
     for key, label in JUDGE_PROBES:
         p = probes.get(key)
         if p and p["n"]:
             verb = "passed" if p["kind"] == "correct" else "failed"
             bars.append((label, p["rate"], f'{label}: {verb} {p["good"]} of {p["n"]}'))
-    fooled = _card("Can the judge be fooled?", "How often it did the right thing. Every bar should reach the line.",
+    fooled = _card("Can the judge be fooled?", "Every bar should reach the line.",
                    f'<div class="chart">{_hbars(bars, "--judge", label_w=340, target=1.0)}</div>')
     extra = ""
     if judge.get("fooled_examples"):
@@ -668,7 +654,18 @@ def render(results):
     meta = (f'Complaint-routing agent &middot; {results["splits"]["time"]["eval_rows"]} test complaints &middot; '
             f'generated {_e(_nice_time(results.get("generated_at", "")))}')
 
-    def assemble(href, start=None):
+    current = "synthetic" if is_demo else "real"
+
+    def sitebar(up):
+        if up is None:
+            return ""
+        items = [("", "Overview"), ("real/", "Real CFPB run"), ("synthetic/", "Synthetic run")]
+        on = ' class="on"'
+        return '<nav class="sitebar">' + "".join(
+            f'<a href="{up}{path}"{on if path and path.startswith(current) else ""}>{label}</a>'
+            for path, label in items) + "</nav>"
+
+    def assemble(href, start=None, up=None):
         show = start or PAGES[0][0]
         verdict_html = "".join(
             f'<a class="verdict {state}" href="{href(anchor)}" data-page="{anchor}"><div class="q">{_e(q)}</div>{_chip(state, chip)}'
@@ -685,7 +682,7 @@ def render(results):
 <html lang="en"{start_attr}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{_e(title)}</title><style>{CSS}</style></head>
 <body>
-<header class="topbar"><div class="inner"><div class="row"><div>
+<header class="topbar"><div class="inner">{sitebar(up)}<div class="row"><div>
 <div class="eyebrow">Eval QC harness</div><h1>Can this agent's score be trusted?</h1>
 <p class="meta">{meta}</p></div>
 <button class="theme" id="theme" type="button">Dark theme</button></div>
@@ -696,7 +693,6 @@ def render(results):
 <div class="verdicts">{verdict_html}</div>
 {pages_html}
 {GLOSSARY}
-<footer>Per-case traces in reports/traces &middot; all numbers in reports/results.json &middot; text version in reports/report.md</footer>
 </main><div id="tip" role="tooltip"></div><script>{JS}</script></body></html>"""
 
     path = config.REPORTS / "dashboard.html"
@@ -707,9 +703,9 @@ def render(results):
     root_href = lambda key: f"{key}/"
     sub_href = lambda key: f"../{key}/"
     site.mkdir(parents=True, exist_ok=True)
-    (site / "index.html").write_text(assemble(root_href, PAGES[0][0]), encoding="utf-8")
+    (site / "index.html").write_text(assemble(root_href, PAGES[0][0], "../"), encoding="utf-8")
     for key, _ in PAGES:
         folder = site / key
         folder.mkdir(parents=True, exist_ok=True)
-        (folder / "index.html").write_text(assemble(sub_href, key), encoding="utf-8")
+        (folder / "index.html").write_text(assemble(sub_href, key, "../../"), encoding="utf-8")
     return path
